@@ -1,0 +1,135 @@
+---
+title: Installation
+description: Install Minimal Tray Tasker on Windows, macOS, or Linux
+---
+
+# Installation
+
+Minimal Tray Tasker is distributed as a standalone desktop application. Follow the instructions below to install it on your operating system.
+
+## System Requirements
+
+Before installing, ensure your system meets these requirements:
+
+- **Operating System**: Windows 10+, macOS 10.15+, or Linux (most distributions)
+- **Disk Space**: ~50 MB for the application
+- **RAM**: 100 MB minimum (with Ram Saver enabled)
+
+## Download from Releases
+
+1. Visit the [Releases page](https://github.com/your-repo/minimal-tray-tasker/releases) on GitHub
+2. Download the latest version for your operating system
+3. Follow the OS-specific installation instructions below
+
+<Tabs>
+  <Tab title="Windows">
+    ### Windows Installation
+    
+    Download the `.exe` or `.msi` installer from the releases page.
+    
+    **Using the .msi installer (Recommended):**
+    1. Double-click the downloaded `.msi` file
+    2. Follow the installation wizard
+    3. The app will be installed to `C:\Program Files\Minimal Tracker`
+    4. Launch from the Start menu or Desktop shortcut
+    
+    **Using the .exe installer:**
+    1. Double-click the `.exe` file
+    2. Choose your installation directory
+    3. Complete the installation
+    4. The app will start automatically
+    
+    <Note>
+      Windows may show a SmartScreen warning for unsigned applications. Click "More info" and then "Run anyway" to proceed with the installation.
+    </Note>
+  </Tab>
+  
+  <Tab title="macOS">
+    ### macOS Installation
+    
+    Download the `.dmg` or `.app.tar.gz` file from the releases page.
+    
+    **Using the .dmg file (Recommended):**
+    1. Open the downloaded `.dmg` file
+    2. Drag the Minimal Tracker app to your Applications folder
+    3. Eject the DMG
+    4. Open Minimal Tracker from Applications
+    
+    **Using the .app.tar.gz file:**
+    1. Extract the `.tar.gz` archive
+    2. Move the extracted app to your Applications folder
+    3. Launch the application
+    
+    <Note>
+      macOS may block the app on first launch because it's not signed. Go to System Preferences → Security & Privacy → General, and click "Open Anyway" next to the message about Minimal Tracker.
+    </Note>
+  </Tab>
+  
+  <Tab title="Linux">
+    ### Linux Installation
+    
+    Download the appropriate package for your distribution from the releases page.
+    
+    **Debian/Ubuntu (.deb):**
+    ```bash
+    sudo dpkg -i minimal-tracker_*.deb
+    sudo apt-get install -f  # Install dependencies if needed
+    ```
+    
+    **Fedora/RHEL (.rpm):**
+    ```bash
+    sudo rpm -i minimal-tracker-*.rpm
+    ```
+    
+    **AppImage (Universal):**
+    ```bash
+    chmod +x minimal-tracker-*.AppImage
+    ./minimal-tracker-*.AppImage
+    ```
+    
+    <Note>
+      For the AppImage version, you may need to install `fuse` to run it:
+      ```bash
+      # Ubuntu/Debian
+      sudo apt install fuse libfuse2
+      
+      # Fedora
+      sudo dnf install fuse fuse-libs
+      ```
+    </Note>
+  </Tab>
+</Tabs>
+
+## First Launch
+
+After installation:
+
+1. The application will appear in your system tray (notification area)
+2. Click the tray icon to open the task manager window
+3. You're ready to start tracking tasks!
+
+If autostart is enabled (default), Minimal Tray Tasker will automatically launch when your system starts.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Application doesn't appear in system tray">
+    Make sure your system tray is visible and not hidden. On Windows, check "Show hidden icons" in the taskbar settings. On Linux, some desktop environments require a system tray extension.
+  </Accordion>
+  
+  <Accordion title="Permission errors on macOS">
+    Right-click the app in Finder, select "Open" and confirm you want to open it. This only needs to be done once.
+  </Accordion>
+  
+  <Accordion title="Database initialization fails">
+    The app uses SQLite to store tasks locally. Ensure you have write permissions in your user directory where the app stores its data.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Now that you have Minimal Tray Tasker installed, learn how to create your first task:
+
+<Card title="Quick Start Guide" icon="rocket" href="/quickstart">
+  Learn how to add tasks, manage daily habits, and configure settings
+</Card>

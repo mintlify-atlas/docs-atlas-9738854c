@@ -1,0 +1,314 @@
+---
+title: Frequently Asked Questions
+description: Common questions about Minimal Tray Tasker
+---
+
+<Accordion title="What is Minimal Tray Tasker?">
+Minimal Tray Tasker is a lightweight system tray application for managing your daily tasks and goals. It lives in your system tray (Windows/Linux) or menu bar (macOS), providing quick access to your task list without cluttering your desktop or taskbar.
+
+The app is built with Tauri (Rust + Web technologies), making it fast, secure, and cross-platform while maintaining a small footprint.
+
+**Key Features**:
+- System tray/menu bar integration
+- Task tracking with progress indicators
+- Daily tasks that auto-reset
+- Hourly reminder notifications
+- Always-on-top quick access window
+- RAM Saver mode to minimize memory usage
+- Autostart on system boot
+</Accordion>
+
+<Accordion title="How are my tasks stored?">
+Your tasks are stored locally in a SQLite database file (`appdb.sqlite`) on your computer. The database schema includes:
+
+- Task ID (unique identifier)
+- Task name
+- Amount (target value)
+- Progress (current value)
+- Completed status
+- Daily task flag
+- Last modified timestamp
+
+**Storage Location**:
+- **Windows**: `%APPDATA%\com.minimal.tray.tasker\appdb.sqlite`
+- **macOS**: `~/Library/Application Support/com.minimal.tray.tasker/appdb.sqlite`
+- **Linux**: `~/.local/share/com.minimal.tray.tasker/appdb.sqlite`
+
+<Note>
+All data is stored locally on your device. Nothing is sent to external servers (see [Does the app collect any data?](#does-the-app-collect-any-data)).
+</Note>
+</Accordion>
+
+<Accordion title="What happens when I close the window?">
+When you close the window (or it loses focus), the behavior depends on your "RAM Saver" setting:
+
+**RAM Saver OFF** (default):
+- The window hides but stays in memory
+- Reopening is instant (no loading time)
+- Uses ~50-100MB of RAM continuously
+- Best for frequent access
+
+**RAM Saver ON**:
+- The window completely closes and is destroyed
+- Reopening recreates the window from scratch
+- Frees memory when not in use (~5-10MB when hidden)
+- Small delay when reopening
+- Best for devices with limited RAM
+
+<Tip>
+Regardless of the setting, your tasks are always saved to the SQLite database. Closing the window never deletes your data.
+</Tip>
+
+The app continues running in the system tray and will:
+- Send hourly reminder notifications (if enabled)
+- Reset daily tasks at midnight
+- Remain accessible via tray icon click
+
+To completely quit the app, right-click the tray icon and select "Quit".
+</Accordion>
+
+<Accordion title="How do I uninstall the app?">
+**Windows**:
+1. Settings → Apps → Apps & features
+2. Find "Minimal Tray Tasker" and click "Uninstall"
+3. Optionally delete app data: `%APPDATA%\com.minimal.tray.tasker\`
+
+**macOS**:
+1. Quit the app (right-click tray icon → Quit)
+2. Drag the app from Applications to Trash
+3. Optionally delete app data:
+   ```bash
+   rm -rf ~/Library/Application\ Support/com.minimal.tray.tasker/
+   rm -rf ~/Library/LaunchAgents/com.minimal.tray.tasker.plist
+   ```
+
+**Linux**:
+1. Remove the app binary:
+   ```bash
+   sudo rm /usr/bin/minimal-tray-tasker
+   # or wherever you installed it
+   ```
+2. Optionally delete app data:
+   ```bash
+   rm -rf ~/.local/share/com.minimal.tray.tasker/
+   rm -rf ~/.config/autostart/minimal-tray-tasker.desktop
+   ```
+
+<Warning>
+Deleting the app data directory will permanently remove all your tasks. Back up `appdb.sqlite` first if you want to preserve your data.
+</Warning>
+</Accordion>
+
+<Accordion title="How do I backup my tasks?">
+Backing up your tasks is simple since everything is stored in a single SQLite database file.
+
+**Manual Backup**:
+1. Close the app (right-click tray icon → Quit)
+2. Navigate to the app data directory (see [How are my tasks stored?](#how-are-my-tasks-stored))
+3. Copy `appdb.sqlite` to your backup location
+
+**Automated Backup**:
+You can set up automated backups using:
+
+**Windows** (Task Scheduler):
+```powershell
+copy "%APPDATA%\com.minimal.tray.tasker\appdb.sqlite" "D:\Backups\tasks_%date:~-4,4%%date:~-10,2%%date:~-7,2%.sqlite"
+```
+
+**macOS/Linux** (cron):
+```bash
+# Add to crontab (crontab -e)
+0 2 * * * cp ~/Library/Application\ Support/com.minimal.tray.tasker/appdb.sqlite ~/Backups/tasks_$(date +\%Y\%m\%d).sqlite
+```
+
+**Cloud Backup**:
+Place the database file in a cloud-synced folder (Dropbox, Google Drive, etc.):
+
+<Warning>
+Do not run multiple instances of the app pointing to the same database file on different machines simultaneously. SQLite doesn't handle concurrent writes well and may corrupt your data.
+</Warning>
+
+**Restore from Backup**:
+1. Quit the app completely
+2. Replace `appdb.sqlite` with your backup copy
+3. Restart the app
+</Accordion>
+
+<Accordion title="Can I use this on multiple computers?">
+Yes, but with important limitations:
+
+**Same Database, Multiple Machines**:
+- You can copy the `appdb.sqlite` file between computers
+- Manual sync: Copy the file when switching machines
+- Cloud sync: Possible but risky (see warning below)
+
+<Warning>
+**Do not run the app on multiple machines simultaneously with a shared database** (e.g., via Dropbox). SQLite doesn't support concurrent access from multiple processes, and you may corrupt or lose your data.
+</Warning>
+
+**Recommended Approach**:
+1. Use one primary machine that runs the app
+2. Manually export/import the database when switching machines
+3. Or close the app on one machine before opening on another (if using cloud sync)
+
+**Future Sync Feature**:
+Built-in cloud sync is not currently available but could be added in future versions.
+</Accordion>
+
+<Accordion title="Is the app cross-platform compatible?">
+Yes! Minimal Tray Tasker runs on:
+
+- **Windows** 10 and later
+- **macOS** 10.13 (High Sierra) and later
+- **Linux** (most modern distributions with GTK 3.0+)
+
+**Database Compatibility**:
+The SQLite database format is identical across all platforms. You can copy `appdb.sqlite` from Windows to macOS to Linux and it will work without conversion.
+
+**UI Differences**:
+- **Windows/Linux**: App appears in system tray (notification area)
+- **macOS**: App appears in menu bar; uses Launch Agent for autostart
+- **Linux**: Window centers on screen (vs. appearing near tray on Windows/macOS)
+- **macOS**: App doesn't appear in Dock (menu bar only)
+
+Settings and features work identically on all platforms, with the exception of platform-specific autostart mechanisms.
+</Accordion>
+
+<Accordion title="How much RAM does the app use?">
+RAM usage depends on your settings:
+
+**Window Hidden**:
+- **RAM Saver OFF**: ~50-100 MB (window stays in memory)
+- **RAM Saver ON**: ~5-10 MB (window is destroyed)
+
+**Window Open**:
+- ~80-120 MB (includes WebView rendering)
+
+**Factors Affecting Usage**:
+- Number of tasks (more tasks = slightly more memory)
+- Operating system (OS overhead varies)
+- WebView implementation (platform-specific)
+
+The app is built with Tauri, which uses the system's native WebView (Edge WebView2 on Windows, WebKit on macOS/Linux), avoiding the need to bundle a full Chromium instance like Electron apps.
+
+<Tip>
+If RAM is a concern, enable "RAM Saver" in settings. This closes the window completely when not in use, reducing memory to ~5-10 MB while keeping core services (notifications, daily resets) running.
+</Tip>
+</Accordion>
+
+<Accordion title="Does the app collect any data or send information online?">
+**No.** Minimal Tray Tasker is completely offline and privacy-focused:
+
+- **No telemetry or analytics** 
+- **No network connections** (the app doesn't even request network permissions)
+- **No data collection**
+- **No user tracking**
+- **No external API calls**
+
+All your tasks and settings are stored locally in the SQLite database on your device. Nothing leaves your computer.
+
+**Open Source**:
+You can verify this by examining the source code. The app uses:
+- Local SQLite database for storage
+- Tauri plugins for system integration (tray, notifications, autostart)
+- No network-related dependencies
+
+**Notifications**:
+Hourly reminder notifications are generated locally by the app's notification service. They don't communicate with any server.
+
+<Note>
+If you download the app from a third-party source or app store, those platforms may have their own analytics/telemetry. Download from official sources when possible.
+</Note>
+</Accordion>
+
+<Accordion title="Why does the app request certain permissions?">
+Minimal Tray Tasker requests only essential system permissions:
+
+**Notification Permission**:
+- Required for hourly reminder notifications
+- You can deny this and the app will work (notifications just won't appear)
+
+**Autostart Permission**:
+- Allows the app to launch at system startup
+- Creates a Launch Agent (macOS), startup entry (Windows), or .desktop file (Linux)
+- You can disable autostart in app settings
+
+**Tray Icon Access**:
+- Required to display the system tray icon
+- This is the app's primary interface
+
+**File System (App Data Directory)**:
+- Stores the SQLite database and settings
+- Limited to the app's own data directory
+- No access to your documents or personal files
+
+The app does **not** request:
+- Network/internet access
+- Location access
+- Camera or microphone
+- Access to your files outside the app data directory
+</Accordion>
+
+<Accordion title="Can I run multiple instances of the app?">
+**Not recommended.** Running multiple instances simultaneously can cause:
+
+- Database locking issues (SQLite doesn't handle concurrent writes)
+- Conflicting tray icons
+- Settings conflicts
+- Potential data corruption
+
+If you accidentally launch a second instance:
+1. You may see a second tray icon appear
+2. Close one instance immediately (right-click tray icon → Quit)
+3. If tasks seem missing, restart the app to reload from the database
+
+**Technical Details**:
+The app doesn't currently implement single-instance locking, so the operating system won't prevent multiple launches. This may be addressed in future versions.
+</Accordion>
+
+<Accordion title="What happens to daily tasks at midnight?">
+Daily tasks automatically reset their progress to 0 at midnight (00:00:00 local time).
+
+**How It Works**:
+- The daily refresh service runs continuously while the app is active
+- It calculates the time until the next midnight
+- At midnight, it resets all tasks marked as "daily" (`is_daily = true`)
+- The task amount (target) remains the same, only progress resets
+
+**Important Notes**:
+- The app must be running for daily resets to occur
+- If the app is closed at midnight, tasks will reset the next time you open it
+- Time zone changes may affect when resets occur
+- Manual system clock changes require an app restart to recalculate
+
+<Tip>
+Enable "Autostart" to ensure the app is running at midnight for consistent daily task resets.
+</Tip>
+</Accordion>
+
+<Accordion title="How do I report bugs or request features?">
+We welcome bug reports and feature requests!
+
+**Bug Reports**:
+1. Check the [Troubleshooting](/support/troubleshooting) guide first
+2. Submit an issue on the project's repository with:
+   - Your operating system and version
+   - App version
+   - Steps to reproduce the bug
+   - Expected vs. actual behavior
+   - Screenshots if applicable
+   - Any error messages
+
+**Feature Requests**:
+1. Check existing issues to avoid duplicates
+2. Describe the feature and use case
+3. Explain how it would benefit users
+
+**Contributing**:
+The app is built with:
+- **Backend**: Rust (Tauri)
+- **Frontend**: Svelte + TypeScript
+- **Database**: SQLite
+
+Contributions are welcome! Check the project's contributing guidelines for details.
+</Accordion>

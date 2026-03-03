@@ -1,0 +1,348 @@
+---
+title: Contributing Guide
+description: Learn how to contribute to Minimal Tray Tasker, from setting up your development environment to submitting pull requests
+---
+
+## Welcome Contributors
+
+Thank you for your interest in contributing to Minimal Tray Tasker! This guide will help you get started with contributing to the project, whether you're fixing bugs, adding features, or improving documentation.
+
+## Getting Started
+
+### Development Environment Setup
+
+<Steps>
+  <Step title="Fork and Clone">
+    Fork the repository on GitHub and clone your fork:
+    
+    ```bash
+    git clone https://github.com/YOUR-USERNAME/minimal-tray-tasker.git
+    cd minimal-tray-tasker
+    ```
+  </Step>
+
+  <Step title="Install Dependencies">
+    Install all required dependencies:
+    
+    ```bash
+    npm i
+    ```
+    
+    Make sure you have the prerequisites installed:
+    - Node.js v18 or higher
+    - Rust 1.77.2 or higher
+    - Platform-specific Tauri dependencies
+  </Step>
+
+  <Step title="Verify Setup">
+    Run the development server to ensure everything works:
+    
+    ```bash
+    npm run tauri dev
+    ```
+    
+    The application should launch successfully.
+  </Step>
+
+  <Step title="Create a Branch">
+    Create a new branch for your changes:
+    
+    ```bash
+    git checkout -b feature/your-feature-name
+    # or
+    git checkout -b fix/issue-description
+    ```
+  </Step>
+</Steps>
+
+## Code Style Guidelines
+
+### TypeScript/JavaScript
+
+The project uses TypeScript with strict type checking:
+
+- **Type everything** - Avoid using `any`, prefer explicit types
+- **Async/await** - Use async/await for asynchronous operations
+- **Svelte conventions** - Follow Svelte 5 runes patterns (`$state`, `$derived`, `$effect`)
+
+**Example:**
+
+```typescript
+// Good
+async function addTracker(name: string, amount: number): Promise<void> {
+    await TrackerService.add(name, amount);
+}
+
+// Avoid
+function addTracker(name, amount) {
+    return TrackerService.add(name, amount);
+}
+```
+
+### Rust
+
+Follow Rust's standard conventions:
+
+- **Run `cargo fmt`** before committing
+- **Run `cargo clippy`** to catch common issues
+- **Error handling** - Use `Result` types, avoid unwrapping in production code
+- **Documentation** - Add doc comments for public functions
+
+**Example:**
+
+```rust
+/// Initializes the notification service with hourly reminders
+pub async fn init(app: AppHandle) -> Result<(), Error> {
+    // Implementation
+    Ok(())
+}
+```
+
+### Svelte Components
+
+- **Component files** - Use PascalCase for component files (`TrackerList.svelte`)
+- **Props typing** - Define prop types explicitly
+- **Reactive statements** - Use Svelte 5 runes for reactivity
+
+**Example:**
+
+```svelte
+<script lang="ts">
+import type { SelectTracker } from '$lib/db/schema';
+
+interface Props {
+    tracker: SelectTracker;
+    onComplete?: () => void;
+}
+
+let { tracker, onComplete }: Props = $props();
+</script>
+```
+
+## Testing Your Changes
+
+### Manual Testing
+
+<Steps>
+  <Step title="Development Mode">
+    Test your changes in development mode:
+    
+    ```bash
+    npm run tauri dev
+    ```
+  </Step>
+
+  <Step title="Type Checking">
+    Run TypeScript type checking:
+    
+    ```bash
+    npm run check
+    ```
+  </Step>
+
+  <Step title="Production Build">
+    Verify that the production build works:
+    
+    ```bash
+    npm run tauri build
+    ```
+  </Step>
+
+  <Step title="Cross-Platform Testing">
+    If possible, test on multiple platforms (Linux, macOS, Windows)
+  </Step>
+</Steps>
+
+<Tip>
+Pay special attention to:
+- Daily task reset functionality (test around midnight)
+- Notification delivery
+- Autostart behavior
+- Tray icon interactions
+- Window positioning on different displays
+</Tip>
+
+## Making Changes
+
+### Frontend Changes
+
+When modifying the Svelte frontend:
+
+1. **Update the UI** in `src/routes/` or `src/lib/Components/`
+2. **Modify services** in `src/lib/trackerService.ts` or `src/lib/settingsService.ts`
+3. **Update database schema** in `src/lib/db/schema.ts` if needed
+4. **Update types** - Ensure TypeScript types are correct
+
+### Backend Changes
+
+When modifying the Rust backend:
+
+1. **Update services** in `src-tauri/src/services/`
+2. **Add migrations** if changing database structure
+3. **Expose commands** in `src-tauri/src/lib.rs` via `invoke_handler`
+4. **Update dependencies** in `src-tauri/Cargo.toml` if needed
+
+### Database Changes
+
+If you need to modify the database schema:
+
+1. **Update `src/lib/db/schema.ts`** with the new schema
+2. **Create a migration** in `src-tauri/src/migration_manager.rs`
+3. **Test migration** on a fresh database and existing databases
+
+<Note>
+Database migrations must be backward compatible. Test thoroughly to avoid data loss.
+</Note>
+
+## Submitting a Pull Request
+
+<Steps>
+  <Step title="Commit Your Changes">
+    Write clear, descriptive commit messages:
+    
+    ```bash
+    git add .
+    git commit -m "Add feature: hourly notification customization"
+    ```
+    
+    Use prefixes like:
+    - `feat:` for new features
+    - `fix:` for bug fixes
+    - `docs:` for documentation
+    - `refactor:` for code refactoring
+    - `style:` for formatting changes
+  </Step>
+
+  <Step title="Push to Your Fork">
+    Push your branch to GitHub:
+    
+    ```bash
+    git push origin feature/your-feature-name
+    ```
+  </Step>
+
+  <Step title="Create Pull Request">
+    Open a pull request on GitHub:
+    
+    - Provide a clear title and description
+    - Reference any related issues (e.g., "Fixes #123")
+    - Describe what changed and why
+    - Include screenshots for UI changes
+  </Step>
+
+  <Step title="Address Feedback">
+    Respond to review comments and make requested changes:
+    
+    ```bash
+    # Make changes
+    git add .
+    git commit -m "Address review feedback"
+    git push origin feature/your-feature-name
+    ```
+  </Step>
+</Steps>
+
+## Pull Request Checklist
+
+Before submitting, ensure:
+
+- [ ] Code follows the project's style guidelines
+- [ ] TypeScript type checking passes (`npm run check`)
+- [ ] Rust code is formatted (`cargo fmt`)
+- [ ] No Clippy warnings (`cargo clippy`)
+- [ ] Application builds successfully (`npm run tauri build`)
+- [ ] Changes are tested manually
+- [ ] Commit messages are clear and descriptive
+- [ ] Documentation is updated if needed
+
+## Areas to Contribute
+
+Here are some ways you can contribute:
+
+### Feature Enhancements
+
+- Custom notification intervals
+- Task categories and tags
+- Statistics and progress tracking
+- Dark mode themes
+- Keyboard shortcuts
+- Task import/export
+
+### Bug Fixes
+
+- Check the GitHub issues for reported bugs
+- Fix platform-specific issues
+- Improve error handling
+
+### Documentation
+
+- Improve README and setup guides
+- Add code comments
+- Create tutorial videos or blog posts
+- Translate documentation
+
+### Performance
+
+- Optimize database queries
+- Reduce memory usage
+- Improve startup time
+
+## Code of Conduct
+
+We are committed to providing a welcoming and inclusive environment:
+
+- **Be respectful** - Treat all contributors with respect
+- **Be constructive** - Provide helpful feedback
+- **Be patient** - Remember that everyone has different skill levels
+- **Be collaborative** - Work together to improve the project
+
+## Getting Help
+
+If you need help contributing:
+
+- **Check existing issues** - Your question might already be answered
+- **Open a discussion** - Ask questions in GitHub Discussions
+- **Join the community** - Connect with other contributors
+- **Read the docs** - Review the [Architecture](/development/architecture) and [Building](/development/building) guides
+
+## Project Structure Reference
+
+Key files to know about:
+
+<CodeGroup>
+```typescript Frontend Service
+// src/lib/trackerService.ts
+// Main business logic for tracker operations
+export const TrackerService = {
+    async add(name: string, amount?: number, daily?: boolean): Promise<void> {
+        // Add tracker logic
+    }
+};
+```
+
+```rust Backend Service
+// src-tauri/src/services/tray_service.rs
+// System tray integration
+pub async fn init(app: AppHandle) {
+    // Tray initialization
+}
+```
+
+```typescript Database Schema
+// src/lib/db/schema.ts
+// Database table definitions using Drizzle ORM
+export const trackers = sqliteTable("trackers", {
+    id: integer().primaryKey(),
+    name: text().notNull(),
+    // ...
+});
+```
+</CodeGroup>
+
+## License
+
+By contributing to Minimal Tray Tasker, you agree that your contributions will be licensed under the same license as the project.
+
+---
+
+Thank you for contributing to Minimal Tray Tasker! Your efforts help make this tool better for everyone.

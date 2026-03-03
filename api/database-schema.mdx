@@ -1,0 +1,235 @@
+---
+title: Database Schema
+description: Complete SQLite database schema reference for Minimal Tray Tasker, including table definitions and TypeScript types
+---
+
+## Overview
+
+Minimal Tray Tasker uses SQLite as its local database, managed through Tauri's SQL plugin. The schema is defined in two places:
+
+- **SQL Migration:** `src-tauri/src/migrations/01_initial.sql`
+- **TypeScript Schema:** `src/lib/db/schema.ts` (using Drizzle ORM)
+
+The database stores task trackers with their progress, completion status, and daily recurrence settings.
+
+## trackers Table
+
+The `trackers` table stores all user-created task trackers.
+
+### Schema Definition
+
+#### SQL (SQLite)
+
+```sql
+CREATE TABLE trackers (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    amount INTEGER NOT NULL,
+    progress INTEGER NOT NULL,
+    completed BOOLEAN NOT NULL CHECK (completed IN (0, 1)),
+    is_daily BOOLEAN NOT NULL CHECK (is_daily IN (0,1)),
+    last_modified_at INTEGER NOT NULL
+);
+```
+
+#### TypeScript (Drizzle ORM)
+
+```typescript
+import {
+    sqliteTable,
+    integer,
+    text,
+    SQLiteBoolean,
+    primaryKey,
+} from "drizzle-orm/sqlite-core";
+
+export const trackers = sqliteTable("trackers", {
+    id: integer().primaryKey(),
+    name: text().notNull(),
+    amount: integer().notNull(),
+    progress: integer().notNull(),
+    completed: integer({ mode: "boolean" }).notNull(),
+    isDaily: integer("is_daily", { mode: "boolean" }).notNull(),
+    lastModifiedAt: integer("last_modified_at", {
+        mode: "timestamp",
+    })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdateFn(() => new Date()),
+});
+```
+
+### Columns
+
+<ResponseField name="id" type="INTEGER">
+  **Primary Key**
+  
+  Auto-incrementing unique identifier for each tracker.
+</ResponseField>
+
+<ResponseField name="name" type="TEXT">
+  **Required**
+  
+  The display name of the tracker (e.g., "Read books", "Exercise", "Study hours").
+</ResponseField>
+
+<ResponseField name="amount" type="INTEGER">
+  **Required**
+  
+  The target amount or goal for this tracker. Represents the total number of units to complete.
+</ResponseField>
+
+<ResponseField name="progress" type="INTEGER">
+  **Required**
+  
+  The current progress toward the goal. Should be a value between 0 and `amount`.
+</ResponseField>
+
+<ResponseField name="completed" type="BOOLEAN">
+  **Required**
+  
+  Indicates whether the tracker has been completed (`1`) or not (`0`). In SQLite, stored as INTEGER with CHECK constraint.
+  
+  In TypeScript, this is automatically converted to a boolean value.
+</ResponseField>
+
+<ResponseField name="is_daily" type="BOOLEAN">
+  **Required** • Column: `is_daily`
+  
+  Indicates whether this tracker resets daily (`1`) or is a one-time goal (`0`). Daily trackers are automatically reset by the refresh_dailies_service.
+  
+  In TypeScript (Drizzle), this is mapped as `isDaily` (camelCase).
+</ResponseField>
+
+<ResponseField name="last_modified_at" type="INTEGER (timestamp)">
+  **Required** • Column: `last_modified_at`
+  
+  Unix timestamp (in milliseconds) of when the tracker was last modified. 
+  
+  - In SQLite: Stored as INTEGER
+  - In TypeScript: Automatically converted to JavaScript `Date` object
+  - Default: Current timestamp when record is created
+  - Auto-update: Updated to current timestamp whenever the record is modified
+  
+  In TypeScript (Drizzle), this is mapped as `lastModifiedAt` (camelCase).
+</ResponseField>
+
+## TypeScript Types
+
+Drizzle ORM automatically generates TypeScript types from the schema definition.
+
+### SelectTracker
+
+Type for selecting/reading tracker records from the database.
+
+```typescript
+export type SelectTracker = typeof trackers.$inferSelect;
+
+// Expands to:
+type SelectTracker = {
+  id: number;
+  name: string;
+  amount: number;
+  progress: number;
+  completed: boolean;
+  isDaily: boolean;
+  lastModifiedAt: Date;
+}
+```
+
+### InsertTracker
+
+Type for inserting new tracker records into the database.
+
+```typescript
+export type InsertTracker = typeof trackers.$inferInsert;
+
+// Expands to:
+type InsertTracker = {
+  id?: number;              // Optional: auto-generated
+  name: string;
+  amount: number;
+  progress: number;
+  completed: boolean;
+  isDaily: boolean;
+  lastModifiedAt?: Date;    // Optional: auto-generated with default
+}
+```
+
+## Usage Examples
+
+### Querying Trackers
+
+```typescript
+import { db } from '$lib/db';
+import { trackers, type SelectTracker } from '$lib/db/schema';
+import { eq } from 'drizzle-orm';
+
+// Get all trackers
+const allTrackers: SelectTracker[] = await db.select().from(trackers);
+
+// Get only daily trackers
+const dailyTrackers = await db
+  .select()
+  .from(trackers)
+  .where(eq(trackers.isDaily, true));
+
+// Get a specific tracker by ID
+const tracker = await db
+  .select()
+  .from(trackers)
+  .where(eq(trackers.id, 1))
+  .get();
+```
+
+### Inserting a Tracker
+
+```typescript
+import { db } from '$lib/db';
+import { trackers, type InsertTracker } from '$lib/db/schema';
+
+const newTracker: InsertTracker = {
+  name: 'Read books',
+  amount: 30,
+  progress: 0,
+  completed: false,
+  isDaily: false,
+  // id and lastModifiedAt are auto-generated
+};
+
+await db.insert(trackers).values(newTracker);
+```
+
+### Updating Progress
+
+```typescript
+import { db } from '$lib/db';
+import { trackers } from '$lib/db/schema';
+import { eq } from 'drizzle-orm';
+
+// Increment progress
+await db
+  .update(trackers)
+  .set({ progress: 15 })
+  .where(eq(trackers.id, 1));
+
+// Mark as completed
+await db
+  .update(trackers)
+  .set({ completed: true })
+  .where(eq(trackers.id, 1));
+```
+
+### Resetting Daily Trackers
+
+```typescript
+import { db } from '$lib/db';
+import { trackers } from '$lib/db/schema';
+import { eq } from 'drizzle-orm';
+
+// Reset all daily trackers (used by refresh_dailies_service)
+await db
+  .update(trackers)
+  .set({ progress: 0, completed: false })
+  .where(eq(trackers.isDaily, true));
+```

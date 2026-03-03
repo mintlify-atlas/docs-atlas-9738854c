@@ -1,0 +1,241 @@
+---
+title: Troubleshooting
+description: Common issues and solutions for Minimal Tray Tasker
+---
+
+## App Not Starting
+
+If Minimal Tray Tasker fails to start or crashes immediately:
+
+### Check System Requirements
+
+Ensure your system meets the minimum requirements:
+- **Windows**: Windows 10 or later
+- **macOS**: macOS 10.13 or later
+- **Linux**: Modern Linux distribution with GTK 3.0+
+
+### Database Corruption
+
+The app uses SQLite (`appdb.sqlite`) to store tasks. If the database becomes corrupted:
+
+1. Close the app completely
+2. Navigate to the app data directory:
+   - **Windows**: `%APPDATA%\com.minimal.tray.tasker\`
+   - **macOS**: `~/Library/Application Support/com.minimal.tray.tasker/`
+   - **Linux**: `~/.local/share/com.minimal.tray.tasker/`
+3. Backup `appdb.sqlite` (if you want to preserve data)
+4. Delete or rename `appdb.sqlite`
+5. Restart the app (a fresh database will be created)
+
+<Warning>
+Deleting the database will remove all your tasks. Only do this if the app won't start.
+</Warning>
+
+### Permission Issues
+
+On Linux and macOS, ensure the app has executable permissions:
+
+```bash
+chmod +x /path/to/minimal-tray-tasker
+```
+
+## Tray Icon Not Showing
+
+The tray icon is essential for accessing the app since it runs primarily in the system tray.
+
+### Windows
+
+1. **Check Hidden Icons**: Click the arrow in the system tray to show hidden icons
+2. **Customize System Tray**: Right-click the taskbar → Taskbar settings → Select which icons appear on the taskbar
+3. **Restart Explorer**: Open Task Manager → Find "Windows Explorer" → Restart
+
+### macOS
+
+1. The app uses `ActivationPolicy::Accessory` mode, so it won't appear in the Dock
+2. Check the menu bar (top-right corner) for the tray icon
+3. If the menu bar is full, macOS may hide icons automatically
+4. Try quitting other menu bar apps to free up space
+
+### Linux
+
+1. **Install System Tray Support**: Some desktop environments need additional packages:
+   ```bash
+   # GNOME
+   sudo apt install gnome-shell-extension-appindicator
+   
+   # KDE Plasma
+   # Usually works out of the box
+   
+   # XFCE
+   # Add "Notification Area" plugin to panel
+   ```
+2. **GTK Dependencies**: Ensure GTK 3.0 is installed:
+   ```bash
+   sudo apt install libgtk-3-0
+   ```
+3. **Wayland vs X11**: Some Wayland sessions have limited tray support. Try switching to X11.
+
+<Note>
+On Linux, the window appears centered instead of next to the tray icon due to positioning limitations on some desktop environments (tray_service.rs:104-108).
+</Note>
+
+## Notifications Not Working
+
+The app sends hourly reminder notifications if enabled in settings.
+
+### Check Notification Settings
+
+1. Open the app and verify "Reminders" is enabled in settings
+2. Notifications trigger at the start of each hour (notification_service.rs:11-40)
+
+### System Notification Permissions
+
+**Windows**:
+1. Settings → System → Notifications → Find "Minimal Tray Tasker"
+2. Enable notifications
+
+**macOS**:
+1. System Preferences → Notifications → Find "Minimal Tray Tasker"
+2. Enable "Allow Notifications"
+
+**Linux**:
+1. Ensure `libnotify` is installed:
+   ```bash
+   sudo apt install libnotify-bin
+   ```
+2. Check your desktop environment's notification settings
+
+<Tip>
+Notifications are sent at the top of each hour (XX:00:00). If you just enabled reminders, wait until the next hour to see the first notification.
+</Tip>
+
+## Tasks Not Persisting
+
+If your tasks disappear after closing the app:
+
+### RAM Saver Mode
+
+The app has a "RAM Saver" setting that closes the window completely when it loses focus (tray_service.rs:91-97).
+
+- **RAM Saver OFF** (default): Window hides but stays in memory
+- **RAM Saver ON**: Window closes and must be recreated
+
+<Warning>
+This is normal behavior. Tasks are stored in the SQLite database, not in memory. Your tasks should persist regardless of RAM Saver mode. If they don't, you may have a database write permission issue.
+</Warning>
+
+### Database Write Permissions
+
+1. Check app data directory permissions:
+   ```bash
+   # Linux/macOS
+   ls -la ~/.local/share/com.minimal.tray.tasker/
+   ```
+2. Ensure the app has write access to `appdb.sqlite`
+3. On Linux, check if the filesystem is mounted read-only
+
+### Transaction Failures
+
+If tasks seem to save but then disappear:
+
+1. Check available disk space
+2. Close any other apps that might be accessing the database
+3. Verify the SQLite database isn't corrupted (see [Database Corruption](#database-corruption))
+
+## Autostart Not Working
+
+If the app doesn't launch at system startup:
+
+### Verify Setting is Enabled
+
+1. Open the app settings
+2. Ensure "Autostart" is enabled
+3. The setting uses `tauri-plugin-autostart` and should work automatically
+
+### Platform-Specific Issues
+
+**Windows**:
+1. Check Task Manager → Startup tab
+2. Ensure "Minimal Tray Tasker" is enabled
+3. Windows may disable apps after they fail to start multiple times
+
+**macOS**:
+1. The app uses Launch Agent (`MacosLauncher::LaunchAgent`)
+2. Check: System Preferences → Users & Groups → Login Items
+3. Manually verify the plist file:
+   ```bash
+   ls ~/Library/LaunchAgents/
+   ```
+
+**Linux**:
+1. Check autostart desktop entry:
+   ```bash
+   ls ~/.config/autostart/
+   ```
+2. Verify the `.desktop` file exists and is valid
+3. Some desktop environments require manual configuration
+
+<Tip>
+Try toggling the autostart setting off and on again. This recreates the autostart configuration (autostart_service.rs:6-23).
+</Tip>
+
+## Platform-Specific Issues
+
+### Windows
+
+**Console Window Appears**: This shouldn't happen in release builds due to `windows_subsystem = "windows"` (main.rs:2). If you see a console, you may be running a debug build.
+
+**Antivirus Blocking**: Some antivirus software may flag Tauri apps. Add an exception for Minimal Tray Tasker.
+
+### macOS
+
+**"App is damaged" Error**: This occurs when downloading from the internet. Fix:
+```bash
+xattr -cr /Applications/Minimal\ Tray\ Tasker.app
+```
+
+**App Not in Dock**: This is intentional. The app uses `ActivationPolicy::Accessory` (lib.rs:76) to run as a menu bar app only.
+
+### Linux
+
+**Blank Window**: Missing WebKit dependencies:
+```bash
+sudo apt install webkit2gtk-4.0 libayatana-appindicator3-1
+```
+
+**Window Positioning**: On Linux, the window centers on screen instead of appearing near the tray icon (tray_service.rs:104-105). This is a limitation of X11/Wayland positioning APIs.
+
+**Tray Icon Pixelated**: Some desktop environments don't scale tray icons well. This is a known limitation.
+
+## Daily Tasks Not Resetting
+
+If daily tasks don't reset at midnight:
+
+1. The app must be running for the daily refresh service to work (refresh_dailies_service.rs)
+2. Ensure the app is set to autostart so it's running at midnight
+3. Time zone changes may affect the reset schedule
+4. If you manually changed the system clock, restart the app
+
+## High CPU Usage
+
+The app should use minimal CPU when idle:
+
+1. Check if you have thousands of tasks (database queries may slow down)
+2. Notification service runs every hour, not continuously
+3. Daily refresh service only runs at midnight
+4. If CPU usage is consistently high, try restarting the app
+
+## Getting More Help
+
+If you're still experiencing issues:
+
+1. Check the [FAQ](/support/faq) for additional information
+2. Look for error messages in:
+   - **Windows**: Event Viewer
+   - **macOS**: Console.app
+   - **Linux**: `journalctl` or `~/.local/share/com.minimal.tray.tasker/logs/`
+3. Report bugs on the project's issue tracker with:
+   - Operating system and version
+   - App version
+   - Steps to reproduce
+   - Any error messages

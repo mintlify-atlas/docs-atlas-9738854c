@@ -1,0 +1,231 @@
+---
+title: Notifications
+description: Learn about the hourly reminder system and how to manage notification settings
+---
+
+Minimal Tray Tasker includes a built-in notification system to help you stay on track with your tasks throughout the day. This guide explains how notifications work and how to manage them.
+
+## Hourly Reminders
+
+The core of the notification system is hourly reminders that prompt you to check on your task progress.
+
+### How It Works
+
+- **Timing**: Notifications appear at the top of every hour (1:00, 2:00, 3:00, etc.)
+- **Precision**: Triggers at exactly 00 minutes and 00 seconds of each hour
+- **Message**: Displays "Did you finish all of your tasks today?"
+- **Frequency**: Every 60 minutes, all day long (while the setting is enabled)
+
+<Info>
+The notification system runs automatically in the background. It calculates the time until the next full hour and schedules the notification accordingly.
+</Info>
+
+### Notification Content
+
+**Title**: "Reminder"
+
+**Body**: "Did you finish all of your tasks today?"
+
+This simple, friendly reminder prompts you to:
+- Check your task list
+- Update your progress
+- Stay mindful of your daily goals
+- Take action on pending tasks
+
+<Note>
+Notifications appear regardless of whether you have pending tasks or not. The system doesn't analyze your task list; it simply reminds you to check in on a regular schedule.
+</Note>
+
+## When Notifications Appear
+
+Understanding the timing helps you make the most of the reminder system.
+
+### First Notification
+
+When you start Minimal Tray Tasker:
+1. The notification service initializes
+2. It calculates the next full hour
+3. The first notification appears at that time (e.g., if you start at 2:30 PM, first notification at 3:00 PM)
+
+### Subsequent Notifications
+
+After the first notification:
+- Notifications continue every hour on the hour
+- The pattern continues as long as:
+  - The application is running
+  - The reminders setting is enabled
+
+### Example Timeline
+
+| Time | Event |
+|------|-------|
+| 9:47 AM | You start Minimal Tray Tasker |
+| 10:00 AM | First reminder appears |
+| 11:00 AM | Second reminder |
+| 12:00 PM | Third reminder |
+| 1:00 PM | Fourth reminder |
+| ... | Continues every hour |
+
+<Tip>
+If hourly reminders feel too frequent, you can disable them in the [settings](/features/settings) and rely on checking your system tray icon manually.
+</Tip>
+
+## Managing Notifications
+
+You have full control over whether reminders are enabled or disabled.
+
+### Enabling Reminders
+
+To turn on hourly notifications:
+
+1. Open Minimal Tray Tasker from your system tray
+2. Click on the Settings or preferences option
+3. Find the "Reminders" toggle
+4. Enable the toggle (turn it on)
+5. Reminders will start at the next full hour
+
+### Disabling Reminders
+
+To turn off hourly notifications:
+
+1. Open Minimal Tray Tasker from your system tray
+2. Access the Settings
+3. Find the "Reminders" toggle
+4. Disable the toggle (turn it off)
+5. No more notifications will appear (even at the next hour)
+
+<Warning>
+When you disable reminders, the notification service continues to run but checks the setting each hour. If the setting is disabled, no notification is shown.
+</Warning>
+
+### Default Setting
+
+By default, reminders are **enabled** when you first install Minimal Tray Tasker. This helps you get into the habit of checking your tasks regularly.
+
+If you prefer a quieter experience, you can disable them at any time.
+
+## Notification Behavior
+
+### System Integration
+
+Minimal Tray Tasker uses your operating system's native notification system:
+
+- **Windows**: Notifications appear in the Action Center
+- **macOS**: Notifications appear in Notification Center
+- **Linux**: Notifications use the system's notification daemon
+
+### Interaction
+
+- **Click**: Clicking the notification opens Minimal Tray Tasker (behavior depends on OS)
+- **Dismiss**: Dismissing the notification has no effect on the app
+- **Do Not Disturb**: System-level DND settings may suppress notifications
+
+<Info>
+If you're not seeing notifications, check your operating system's notification permissions for Minimal Tray Tasker. Some systems require you to grant permission for applications to send notifications.
+</Info>
+
+## Use Cases
+
+### When Reminders Are Helpful
+
+<CardGroup cols={2}>
+  <Card title="Building New Habits" icon="arrows-rotate">
+    Regular reminders help reinforce new daily tasks and habits until they become automatic.
+  </Card>
+
+  <Card title="Busy Schedules" icon="calendar-days">
+    When you're focused on work, hourly check-ins help you remember personal goals and tasks.
+  </Card>
+
+  <Card title="Time Awareness" icon="clock">
+    Notifications serve as a gentle time marker, helping you stay aware of the hours passing.
+  </Card>
+
+  <Card title="Accountability" icon="clipboard-check">
+    Regular prompts create a sense of accountability for completing your daily tasks.
+  </Card>
+</CardGroup>
+
+### When to Disable Reminders
+
+<CardGroup cols={2}>
+  <Card title="Notification Fatigue" icon="bell-slash">
+    If you find hourly notifications distracting or overwhelming, turn them off.
+  </Card>
+
+  <Card title="Meeting-Heavy Days" icon="users">
+    During days with back-to-back meetings, notifications can be disruptive.
+  </Card>
+
+  <Card title="Deep Focus Work" icon="brain">
+    When you need uninterrupted concentration, disable reminders temporarily.
+  </Card>
+
+  <Card title="Established Habits" icon="check-double">
+    Once tasks are routine, you may not need hourly prompts anymore.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Notifications aren't appearing">
+    Check the following:
+    1. Verify that reminders are enabled in Minimal Tray Tasker settings
+    2. Check your operating system's notification permissions
+    3. Ensure Do Not Disturb or Focus modes aren't blocking notifications
+    4. Confirm the app is running (check system tray)
+    5. Wait until the next full hour to see if a notification appears
+  </Accordion>
+
+  <Accordion title="Notifications appear at wrong times">
+    Notifications should only appear on the hour (X:00). If they're appearing at other times:
+    1. Check your system clock is correct
+    2. Verify your timezone settings
+    3. Restart Minimal Tray Tasker to reinitialize the notification service
+  </Accordion>
+
+  <Accordion title="Too many or too few notifications">
+    The frequency is fixed at one per hour. You cannot change the interval. Your options are:
+    - Keep reminders enabled (hourly)
+    - Disable reminders completely (none)
+    
+    If you need different frequencies, use your OS's Do Not Disturb schedule as needed.
+  </Accordion>
+
+  <Accordion title="Can I customize the notification message?">
+    Currently, the notification message is fixed and cannot be customized. It will always say "Did you finish all of your tasks today?"
+  </Accordion>
+
+  <Accordion title="Do notifications show which tasks are incomplete?">
+    No, notifications are generic reminders. They don't include specific task information. You need to open the app to see your task list.
+  </Accordion>
+
+  <Accordion title="What happens if I miss a notification?">
+    Missed notifications don't stack up. If you dismiss or miss a notification, the next one will simply appear at the following hour. There's no catch-up mechanism.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Steps>
+  <Step title="Start with reminders enabled">
+    Give the hourly reminder system a try for at least a week to see if it helps your productivity.
+  </Step>
+
+  <Step title="Respond to notifications">
+    When a reminder appears, take 30 seconds to open the app and update your progress. Make it a mini-habit.
+  </Step>
+
+  <Step title="Adjust based on your rhythm">
+    If hourly feels like too much, disable them. If you find you need the nudges, keep them on.
+  </Step>
+
+  <Step title="Combine with system settings">
+    Use your OS's Do Not Disturb during focus time, and let notifications through during normal hours.
+  </Step>
+</Steps>
+
+## Related Settings
+
+For more information about managing the reminders toggle and other application settings, see the [Settings](/features/settings) page.

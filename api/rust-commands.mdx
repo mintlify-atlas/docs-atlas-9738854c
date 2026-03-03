@@ -1,0 +1,225 @@
+---
+title: Tauri Commands
+description: Complete reference for all Rust commands exposed to the TypeScript frontend via Tauri's IPC bridge
+---
+
+## Overview
+
+Minimal Tray Tasker exposes four Tauri commands from the Rust backend to the TypeScript frontend. These commands are registered in `src-tauri/src/lib.rs:111-116` and implemented in the settings service.
+
+All commands can be invoked from the frontend using Tauri's `invoke` function.
+
+## get_settings
+
+Retrieves all current user settings from the application state.
+
+**Source:** `src-tauri/src/services/settings_service.rs:22-33`
+
+### Parameters
+
+This command takes no parameters.
+
+### Returns
+
+<ResponseField name="settings" type="Map<string, JsonValue>">
+  A map containing all user settings with their current values:
+  
+  <ResponseField name="autostart" type="boolean">
+    Whether the application starts automatically on system boot (default: `true`)
+  </ResponseField>
+  
+  <ResponseField name="reminders" type="boolean">
+    Whether hourly reminder notifications are enabled (default: `true`)
+  </ResponseField>
+  
+  <ResponseField name="ramsaver" type="boolean">
+    Whether RAM saver mode is enabled (default: `false`)
+  </ResponseField>
+</ResponseField>
+
+### Example
+
+```typescript
+import { invoke } from '@tauri-apps/api/core';
+
+const settings = await invoke<Record<string, boolean>>('get_settings');
+console.log(settings);
+// Output: { autostart: true, reminders: true, ramsaver: false }
+```
+
+### Rust Implementation
+
+```rust
+#[tauri::command]
+pub fn get_settings(state: State<'_, Mutex<AppData>>) -> serde_json::Map<String, Value> {
+    let state = state.lock().unwrap();
+
+    let mut map = serde_json::Map::new();
+
+    for (field_name, field_value) in &state.user_settings {
+        map.insert(field_name.to_string(), field_value.clone());
+    }
+
+    map
+}
+```
+
+---
+
+## set_autostart
+
+Enables or disables automatic application startup on system boot.
+
+**Source:** `src-tauri/src/services/settings_service.rs:35-46`
+
+### Parameters
+
+<ParamField path="value" type="boolean" required>
+  Whether to enable (`true`) or disable (`false`) autostart functionality
+</ParamField>
+
+### Returns
+
+This command returns nothing (void).
+
+### Side Effects
+
+- Updates the application state
+- Persists the setting to `usersettings.json` store
+- Emits a `settings_changed` event that triggers the autostart service to reconfigure itself
+
+### Example
+
+```typescript
+import { invoke } from '@tauri-apps/api/core';
+
+// Enable autostart
+await invoke('set_autostart', { value: true });
+
+// Disable autostart
+await invoke('set_autostart', { value: false });
+```
+
+### Rust Implementation
+
+```rust
+#[tauri::command]
+pub fn set_autostart(app: AppHandle, state: State<'_, Mutex<AppData>>, value: bool) {
+    let store = app.app_handle().store("usersettings.json").unwrap();
+    let mut state = state.lock().unwrap();
+
+    state
+        .user_settings
+        .insert(Settings::Autostart, json!(value));
+
+    store.set(Settings::Autostart.to_string(), value);
+    app.emit("settings_changed", json!(null)).unwrap();
+}
+```
+
+---
+
+## set_reminders
+
+Enables or disables hourly reminder notifications.
+
+**Source:** `src-tauri/src/services/settings_service.rs:48-59`
+
+### Parameters
+
+<ParamField path="value" type="boolean" required>
+  Whether to enable (`true`) or disable (`false`) hourly reminder notifications
+</ParamField>
+
+### Returns
+
+This command returns nothing (void).
+
+### Side Effects
+
+- Updates the application state
+- Persists the setting to `usersettings.json` store
+- Emits a `settings_changed` event
+- Affects the behavior of the notification service running in the background
+
+### Example
+
+```typescript
+import { invoke } from '@tauri-apps/api/core';
+
+// Enable reminders
+await invoke('set_reminders', { value: true });
+
+// Disable reminders
+await invoke('set_reminders', { value: false });
+```
+
+### Rust Implementation
+
+```rust
+#[tauri::command]
+pub fn set_reminders(app: AppHandle, state: State<'_, Mutex<AppData>>, value: bool) {
+    let store = app.app_handle().store("usersettings.json").unwrap();
+    let mut state = state.lock().unwrap();
+
+    state
+        .user_settings
+        .insert(Settings::Reminders, json!(value));
+
+    store.set(Settings::Reminders.to_string(), value);
+    app.emit("settings_changed", json!(null)).unwrap();
+}
+```
+
+---
+
+## set_ram_saver
+
+Enables or disables RAM saver mode, which helps reduce memory usage of the application.
+
+**Source:** `src-tauri/src/services/settings_service.rs:61-72`
+
+### Parameters
+
+<ParamField path="value" type="boolean" required>
+  Whether to enable (`true`) or disable (`false`) RAM saver mode
+</ParamField>
+
+### Returns
+
+This command returns nothing (void).
+
+### Side Effects
+
+- Updates the application state
+- Persists the setting to `usersettings.json` store
+- Emits a `settings_changed` event
+
+### Example
+
+```typescript
+import { invoke } from '@tauri-apps/api/core';
+
+// Enable RAM saver mode
+await invoke('set_ram_saver', { value: true });
+
+// Disable RAM saver mode
+await invoke('set_ram_saver', { value: false });
+```
+
+### Rust Implementation
+
+```rust
+#[tauri::command]
+pub fn set_ram_saver(app: AppHandle, state: State<'_, Mutex<AppData>>, value: bool) {
+    let store = app.app_handle().store("usersettings.json").unwrap();
+    let mut state = state.lock().unwrap();
+
+    state
+        .user_settings
+        .insert(Settings::RamSaver, json!(value));
+
+    store.set(Settings::RamSaver.to_string(), value);
+    app.emit("settings_changed", json!(null)).unwrap();
+}
+```

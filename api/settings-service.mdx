@@ -1,0 +1,334 @@
+---
+title: 'SettingsService'
+description: 'API reference for the SettingsService module that manages application settings'
+---
+
+## Overview
+
+The `SettingsService` is a singleton service that manages application-level settings in Minimal Tray Tasker. It provides methods to configure autostart behavior, reminder notifications, and RAM-saving mode.
+
+## Store
+
+```typescript
+import { settings } from '$lib/settingsService';
+```
+
+The `settings` store is a Svelte writable store containing a `SettingsObject` with boolean flags for each setting.
+
+**Type**: `Writable<SettingsObject>`
+
+**Default Values**:
+```typescript
+{
+    autostart: true,
+    reminders: true,
+    ramsaver: undefined
+}
+```
+
+## Enums
+
+### Settings
+
+Enum defining the available settings keys.
+
+```typescript
+enum Settings {
+    autostart = "autostart",
+    reminders = "reminders",
+    ramsaver = "ramsaver",
+}
+```
+
+**Values**
+
+<ResponseField name="autostart" type="string">
+  Setting key for auto-starting the application on system boot.
+</ResponseField>
+
+<ResponseField name="reminders" type="string">
+  Setting key for enabling reminder notifications.
+</ResponseField>
+
+<ResponseField name="ramsaver" type="string">
+  Setting key for enabling RAM-saving mode.
+</ResponseField>
+
+**Example**
+
+```typescript
+import { Settings, settings } from '$lib/settingsService';
+import { get } from 'svelte/store';
+
+const currentSettings = get(settings);
+const isAutostartEnabled = currentSettings[Settings.autostart];
+```
+
+## Types
+
+### SettingsObject
+
+Type representing the settings configuration object.
+
+```typescript
+type SettingsObject = {
+    [key in Settings]?: boolean;
+}
+```
+
+Each key from the `Settings` enum maps to an optional boolean value.
+
+**Example**
+
+```typescript
+const mySettings: SettingsObject = {
+    autostart: true,
+    reminders: false,
+    ramsaver: true
+};
+```
+
+## Methods
+
+### refresh()
+
+Refreshes the settings from the backend by invoking the Tauri `get_settings` command.
+
+```typescript
+async refresh(): Promise<void>
+```
+
+**Returns**
+
+<ResponseField name="Promise<void>" type="Promise<void>">
+  Resolves when the settings have been fetched from the backend and the store updated.
+</ResponseField>
+
+**Example**
+
+```typescript
+import { SettingsService } from '$lib/settingsService';
+
+// Refresh settings from backend
+await SettingsService.refresh();
+```
+
+**Implementation Details**
+
+This method calls the Tauri backend command `get_settings` which returns a `SettingsObject`:
+
+```typescript
+await invoke<SettingsObject>("get_settings").then((result) => {
+    settings.set(result);
+});
+```
+
+---
+
+### setAutostart()
+
+Enables or disables the application autostart on system boot.
+
+```typescript
+async setAutostart(value: boolean): Promise<void>
+```
+
+**Parameters**
+
+<ParamField path="value" type="boolean" required>
+  `true` to enable autostart, `false` to disable it.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="Promise<void>" type="Promise<void>">
+  Resolves when the autostart setting has been updated in both the store and backend.
+</ResponseField>
+
+**Example**
+
+```typescript
+import { SettingsService } from '$lib/settingsService';
+
+// Enable autostart
+await SettingsService.setAutostart(true);
+
+// Disable autostart
+await SettingsService.setAutostart(false);
+```
+
+**Behavior**
+- Updates the store immediately for reactive UI updates
+- Calls the Tauri backend command `set_autostart` to persist the change
+- On some platforms, this may require system permissions
+
+---
+
+### setReminders()
+
+Enables or disables reminder notifications for incomplete tasks.
+
+```typescript
+async setReminders(value: boolean): Promise<void>
+```
+
+**Parameters**
+
+<ParamField path="value" type="boolean" required>
+  `true` to enable reminders, `false` to disable them.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="Promise<void>" type="Promise<void>">
+  Resolves when the reminders setting has been updated in both the store and backend.
+</ResponseField>
+
+**Example**
+
+```typescript
+import { SettingsService } from '$lib/settingsService';
+
+// Enable reminders
+await SettingsService.setReminders(true);
+
+// Disable reminders
+await SettingsService.setReminders(false);
+```
+
+**Behavior**
+- Updates the store immediately for reactive UI updates
+- Calls the Tauri backend command `set_reminders` to persist the change
+- When enabled, the application will send periodic notifications about incomplete tasks
+
+---
+
+### setRamSaver()
+
+Enables or disables RAM-saving mode to reduce memory usage.
+
+```typescript
+async setRamSaver(value: boolean): Promise<void>
+```
+
+**Parameters**
+
+<ParamField path="value" type="boolean" required>
+  `true` to enable RAM-saving mode, `false` to disable it.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="Promise<void>" type="Promise<void>">
+  Resolves when the RAM-saving setting has been updated in both the store and backend.
+</ResponseField>
+
+**Example**
+
+```typescript
+import { SettingsService } from '$lib/settingsService';
+
+// Enable RAM-saving mode
+await SettingsService.setRamSaver(true);
+
+// Disable RAM-saving mode
+await SettingsService.setRamSaver(false);
+```
+
+**Behavior**
+- Updates the store immediately for reactive UI updates
+- Calls the Tauri backend command `set_ram_saver` to persist the change
+- When enabled, the application optimizes memory usage, potentially at the cost of some performance
+
+## Usage in Components
+
+### Settings Page Example
+
+```typescript
+<script lang="ts">
+    import { SettingsService, settings, Settings } from '$lib/settingsService';
+    import { onMount } from 'svelte';
+
+    onMount(async () => {
+        // Load settings on component mount
+        await SettingsService.refresh();
+    });
+
+    async function toggleAutostart() {
+        const current = $settings[Settings.autostart] ?? false;
+        await SettingsService.setAutostart(!current);
+    }
+
+    async function toggleReminders() {
+        const current = $settings[Settings.reminders] ?? false;
+        await SettingsService.setReminders(!current);
+    }
+
+    async function toggleRamSaver() {
+        const current = $settings[Settings.ramsaver] ?? false;
+        await SettingsService.setRamSaver(!current);
+    }
+</script>
+
+<div class="settings">
+    <label>
+        <input 
+            type="checkbox" 
+            checked={$settings[Settings.autostart]} 
+            on:change={toggleAutostart}
+        />
+        Start on system boot
+    </label>
+
+    <label>
+        <input 
+            type="checkbox" 
+            checked={$settings[Settings.reminders]} 
+            on:change={toggleReminders}
+        />
+        Enable reminders
+    </label>
+
+    <label>
+        <input 
+            type="checkbox" 
+            checked={$settings[Settings.ramsaver]} 
+            on:change={toggleRamSaver}
+        />
+        RAM-saving mode
+    </label>
+</div>
+```
+
+### Reading Settings
+
+```typescript
+import { settings, Settings } from '$lib/settingsService';
+import { get } from 'svelte/store';
+
+// In a reactive context (Svelte component)
+const isAutostartEnabled = $settings[Settings.autostart];
+
+// In a non-reactive context
+const currentSettings = get(settings);
+if (currentSettings[Settings.reminders]) {
+    // Show reminders
+}
+```
+
+## Backend Integration
+
+The `SettingsService` communicates with the Tauri backend using the following commands:
+
+- `get_settings`: Retrieves the current settings configuration
+- `set_autostart`: Updates the autostart setting
+- `set_reminders`: Updates the reminders setting
+- `set_ram_saver`: Updates the RAM-saving mode setting
+
+All backend commands are invoked using Tauri's `invoke` function:
+
+```typescript
+import { invoke } from "@tauri-apps/api/core";
+
+await invoke("set_autostart", { value: true });
+```

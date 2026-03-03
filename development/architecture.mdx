@@ -1,0 +1,366 @@
+---
+title: Architecture Overview
+description: Understand the technical architecture, stack, and data flow of Minimal Tray Tasker
+---
+
+## Technology Stack
+
+Minimal Tray Tasker is built with modern web and systems programming technologies:
+
+### Frontend
+
+- **Svelte 5** - Reactive UI framework with runes and fine-grained reactivity
+- **SvelteKit** - Application framework with routing and SSG support
+- **TypeScript** - Type-safe JavaScript for better developer experience
+- **TailwindCSS 4** - Utility-first styling with Vite integration
+- **Vite** - Fast build tool and development server
+
+### Backend
+
+- **Tauri 2.x** - Rust-based framework for building native desktop applications
+- **Rust 1.77.2+** - Systems programming language for the backend core
+- **SQLite** - Embedded database for local data storage
+- **Drizzle ORM** - TypeScript ORM for type-safe database operations
+
+### Key Dependencies
+
+From `package.json:27-34` and `Cargo.toml:20-35`:
+
+<CodeGroup>
+```json Frontend Dependencies
+{
+  "@tauri-apps/plugin-autostart": "^2.5.0",
+  "@tauri-apps/plugin-notification": "^2.3.1",
+  "@tauri-apps/plugin-positioner": "^2.3.0",
+  "@tauri-apps/plugin-sql": "^2.3.0",
+  "@tauri-apps/plugin-store": "^2.4.0",
+  "drizzle-orm": "^0.44.5"
+}
+```
+
+```toml Rust Dependencies
+[dependencies]
+tauri = { version = "2.8.5", features = [ "tray-icon" ] }
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+tauri-plugin-notification = "2"
+tauri-plugin-store = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-positioner = "2"
+```
+</CodeGroup>
+
+## Project Structure
+
+The codebase is organized into two main directories:
+
+### Frontend Structure (`src/`)
+
+```
+src/
+├── lib/
+│   ├── Components/          # Reusable Svelte components
+│   │   ├── Button.svelte
+│   │   ├── Card.svelte
+│   │   ├── Dialog.svelte
+│   │   ├── Switch.svelte
+│   │   └── TrackerList.svelte
+│   ├── db/                  # Database layer
+│   │   ├── schema.ts        # Drizzle schema definitions
+│   │   └── database.ts      # Database connection
+│   ├── stores/              # Svelte stores
+│   │   └── deleteStore.ts
+│   ├── appdata.ts           # Database operations
+│   ├── trackerService.ts    # Tracker business logic
+│   └── settingsService.ts   # Settings management
+├── routes/                  # SvelteKit routes
+│   ├── +page.svelte         # Main tracker view
+│   ├── completed/           # Completed tasks view
+│   └── daily/               # Daily tasks view
+└── app.d.ts                 # TypeScript declarations
+```
+
+### Backend Structure (`src-tauri/`)
+
+```
+src-tauri/
+├── src/
+│   ├── services/            # Core backend services
+│   │   ├── tray_service.rs         # System tray integration
+│   │   ├── notification_service.rs # Hourly reminders
+│   │   ├── autostart_service.rs    # System startup integration
+│   │   ├── refresh_dailies_service.rs # Daily task reset
+│   │   └── settings_service.rs     # User preferences
+│   ├── lib.rs               # Application entry point
+│   ├── main.rs              # Binary entry point
+│   └── migration_manager.rs # Database migrations
+├── Cargo.toml               # Rust dependencies
+└── tauri.conf.json          # Tauri configuration
+```
+
+## Core Services
+
+The application is composed of several independent services that run concurrently:
+
+### Tray Service
+
+**Location:** `src-tauri/src/services/tray_service.rs`
+
+Manages the system tray icon and menu. Handles window creation and positioning:
+
+```rust
+pub async fn init(app: AppHandle) {
+    let _ = TrayIconBuilder::new()
+        .tooltip("Minimal Tracker App")
+        .icon(app.default_window_icon().unwrap().clone())
+        .menu(&menu)
+        .show_menu_on_left_click(false)
+        .on_tray_icon_event(|tray, event| {
+            // Handle tray clicks
+        })
+        .build(&app);
+}
+```
+
+**Features:**
+- Left-click opens the main window
+- Right-click shows context menu
+- Window positioning near tray icon (platform-aware)
+- RAM saver mode (closes window when unfocused)
+
+### Notification Service
+
+**Location:** `src-tauri/src/services/notification_service.rs:11-40`
+
+Sends hourly reminders to complete tasks:
+
+```rust
+pub async fn init(app: AppHandle) {
+    tokio::spawn(async move {
+        loop {
+            let now = chrono::Local::now();
+            let next_hour = (now + chrono::Duration::hours(1))
+                .with_minute(0).unwrap()
+                .with_second(0).unwrap();
+            
+            let dur: Duration = (next_hour - now).to_std().unwrap();
+            sleep(dur).await;
+            
+            // Check if reminders are enabled
+            if enabled == false { continue; }
+            
+            app.notification()
+                .builder()
+                .title("Reminder")
+                .body("Did you finish all of your tasks today?")
+                .show()
+                .unwrap();
+        }
+    });
+}
+```
+
+**Features:**
+- Runs every hour on the hour
+- Respects user settings (can be disabled)
+- Non-blocking async implementation
+
+### Refresh Dailies Service
+
+**Location:** `src-tauri/src/services/refresh_dailies_service.rs`
+
+Automatically resets daily tasks at midnight:
+
+- Calculates time until next midnight
+- Resets progress and completion status for daily tasks
+- Runs continuously in the background
+
+### Autostart Service
+
+**Location:** `src-tauri/src/services/autostart_service.rs`
+
+Manages system startup integration:
+
+- Registers app to start with the operating system
+- Listens for settings changes
+- Platform-specific implementation (desktop only)
+
+### Settings Service
+
+**Location:** `src-tauri/src/services/settings_service.rs`
+
+Manages user preferences using Tauri's store plugin:
+
+- Autostart enable/disable
+- Reminders enable/disable
+- RAM saver mode (closes window when unfocused)
+
+## Data Layer
+
+### Database Schema
+
+**Location:** `src/lib/db/schema.ts:9-22`
+
+The application uses a single SQLite table managed by Drizzle ORM:
+
+```typescript
+export const trackers = sqliteTable("trackers", {
+    id: integer().primaryKey(),
+    name: text().notNull(),
+    amount: integer().notNull(),
+    progress: integer().notNull(),
+    completed: integer({ mode: "boolean" }).notNull(),
+    isDaily: integer("is_daily", { mode: "boolean" }).notNull(),
+    lastModifiedAt: integer("last_modified_at", {
+        mode: "timestamp",
+    })
+        .notNull()
+        .$defaultFn(() => new Date())
+        .$onUpdateFn(() => new Date()),
+});
+```
+
+**Fields:**
+- `id` - Unique identifier
+- `name` - Task description
+- `amount` - Target number of completions
+- `progress` - Current completion count
+- `completed` - Whether the task is finished
+- `isDaily` - Whether to reset at midnight
+- `lastModifiedAt` - Timestamp for tracking daily resets
+
+### Tracker Service
+
+**Location:** `src/lib/trackerService.ts`
+
+Provides the business logic layer between UI and database:
+
+```typescript
+export const TrackerService = {
+    async refresh(): Promise<void> {
+        trackers.set(await dbGetAllTrackers());
+    },
+    
+    async add(name: string, amount?: number, daily?: boolean): Promise<void> {
+        const tracker: InsertTracker = {
+            id: undefined,
+            name,
+            amount: amount ?? 1,
+            progress: 0,
+            completed: false,
+            isDaily: daily ?? false,
+        };
+        const new_tracker = await dbAddTracker(tracker);
+        trackers.update((current) => {
+            current.push(new_tracker);
+            return current;
+        });
+    },
+    
+    async increment(tracker: SelectTracker): Promise<void> {
+        const newProgress = Math.min(tracker.progress + 1, tracker.amount);
+        // Update store and database
+    },
+    
+    // ... more operations
+};
+```
+
+## Data Flow
+
+The application follows a unidirectional data flow pattern:
+
+<Steps>
+  <Step title="User Interaction">
+    User interacts with Svelte components in the UI (button clicks, form submissions)
+  </Step>
+  
+  <Step title="Service Layer">
+    Component calls TrackerService methods (e.g., `TrackerService.add()`)
+  </Step>
+  
+  <Step title="Database Update">
+    Service updates the SQLite database via Drizzle ORM
+  </Step>
+  
+  <Step title="Store Update">
+    Service updates the Svelte store with new data
+  </Step>
+  
+  <Step title="Reactive UI">
+    Svelte components reactively update based on store changes
+  </Step>
+</Steps>
+
+### Cross-Process Communication
+
+Tauri enables communication between Rust backend and JavaScript frontend:
+
+**Frontend to Backend (Commands):**
+```typescript
+import { invoke } from '@tauri-apps/api/core';
+
+const settings = await invoke('get_settings');
+await invoke('set_autostart', { enabled: true });
+```
+
+**Backend to Frontend (Events):**
+```rust
+app.listen_any("settings_changed", move |_event| {
+    // React to settings changes
+});
+```
+
+## Application Lifecycle
+
+From `src-tauri/src/lib.rs:55-127`, the application initializes services on startup:
+
+```rust
+pub fn run() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_positioner::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_autostart::Builder::new().build())
+        .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_sql::Builder::new()
+            .add_migrations("sqlite:appdb.sqlite", migration_manager::get_migrations())
+            .build())
+        .setup(|app| {
+            // Start System Tray
+            tauri::async_runtime::spawn(tray_service::init(handle.clone()));
+            
+            // Start User Settings Service
+            settings_service::init(handle.clone(), handle.state());
+            
+            // Start the hourly Notification Service
+            tauri::async_runtime::spawn(notification_service::init(handle.clone()));
+            
+            // Start Daily Task service
+            tauri::async_runtime::spawn(refresh_dailies_service::init(handle.clone()));
+            
+            // Start Autostart Service
+            autostart_service::init(handle.clone());
+            
+            Ok(())
+        })
+        // Prevent exit on window close
+        .run(|_app_handle, event| match event {
+            tauri::RunEvent::ExitRequested { api, code, .. } => {
+                if code.is_none() {
+                    api.prevent_exit();
+                }
+            }
+            _ => {}
+        });
+}
+```
+
+<Note>
+The app prevents exit when closing the window to keep running in the system tray. Use the tray menu to fully quit.
+</Note>
+
+## Security Considerations
+
+- **Local-only data** - All data is stored locally in SQLite
+- **No network access** - Application runs entirely offline
+- **Tauri's security model** - Commands must be explicitly exposed via `invoke_handler`
+- **Type safety** - TypeScript and Rust provide compile-time safety

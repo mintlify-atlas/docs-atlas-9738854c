@@ -1,0 +1,336 @@
+---
+title: Settings
+description: Configure Minimal Tray Tasker with autostart, reminders, and RAM saver options
+---
+
+Minimal Tray Tasker provides three essential settings to customize your experience. This guide explains each setting and how to configure them.
+
+## Available Settings
+
+Minimal Tray Tasker includes three settings:
+
+1. **Autostart** - Launch the application automatically when your computer starts
+2. **Reminders** - Enable or disable hourly notification reminders
+3. **RAM Saver** - Optimize memory usage for better system performance
+
+All settings can be toggled on or off independently based on your preferences.
+
+<Info>
+Settings are stored locally on your computer and persist between application restarts. Your preferences are remembered.
+</Info>
+
+## Autostart
+
+Control whether Minimal Tray Tasker launches automatically when you start your computer.
+
+### What It Does
+
+When **enabled**:
+- Minimal Tray Tasker starts automatically when you log into your computer
+- The application launches minimized to your system tray
+- Your tasks are immediately available without manual launching
+- Daily task resets are processed automatically at midnight (even if you don't manually open the app)
+
+ When **disabled**:
+- You need to manually launch Minimal Tray Tasker each time
+- The app won't be available until you start it
+- You may miss midnight resets for daily tasks if the app isn't running
+
+### Default Setting
+
+**Enabled by default** - Most users benefit from having their task tracker ready at all times.
+
+### When to Enable
+
+<CardGroup cols={2}>
+  <Card title="Daily Task Users" icon="calendar-day">
+    If you use daily tasks that reset at midnight, autostart ensures the reset happens automatically.
+  </Card>
+
+  <Card title="Habit Tracking" icon="chart-line">
+    For tracking habits and routines, having the app always available in your tray is convenient.
+  </Card>
+
+  <Card title="Set and Forget" icon="gear">
+    When you want task tracking to be a seamless part of your workflow without thinking about it.
+  </Card>
+
+  <Card title="Reminder Users" icon="bell">
+    If you rely on hourly reminders, autostart ensures you get them throughout the day.
+  </Card>
+</CardGroup>
+
+### When to Disable
+
+<CardGroup cols={2}>
+  <Card title="Minimal Startup" icon="gauge-simple">
+    If you prefer a clean startup with minimal applications launching automatically.
+  </Card>
+
+  <Card title="Occasional Use" icon="clock">
+    When you only use task tracking sporadically and don't need it running all the time.
+  </Card>
+
+  <Card title="Resource Management" icon="memory">
+    If you want to reduce the number of background applications (though combined with RAM saver, impact is minimal).
+  </Card>
+
+  <Card title="Manual Control" icon="hand">
+    When you prefer to consciously decide when to start tracking tasks.
+  </Card>
+</CardGroup>
+
+<Tip>
+Even with autostart disabled, you can still manually launch Minimal Tray Tasker anytime. It will appear in your system tray and function normally.
+</Tip>
+
+## Reminders
+
+Control whether you receive hourly notification reminders to check your tasks.
+
+### What It Does
+
+When **enabled**:
+- You receive a notification every hour on the hour (1:00, 2:00, 3:00, etc.)
+- Notification says: "Did you finish all of your tasks today?"
+- Provides regular prompts to check and update your task progress
+- Helps maintain awareness of your tasks throughout the day
+
+When **disabled**:
+- No notifications are sent
+- You need to remember to check your tasks manually
+- Quieter, less intrusive experience
+- The system tray icon is your only reminder
+
+### Default Setting
+
+**Enabled by default** - Helps new users build the habit of checking tasks regularly.
+
+### How It Works
+
+The notification system:
+1. Runs continuously in the background
+2. Calculates the next full hour
+3. Waits until that time
+4. Checks if reminders are enabled
+5. If enabled, shows the notification
+6. Repeats for the next hour
+
+<Note>
+Even when disabled, the notification service still runs but simply doesn't display notifications. You can enable or disable this setting at any time without restarting the app.
+</Note>
+
+### Best For
+
+Enable reminders when:
+- Building new habits and need regular prompts
+- Working long hours and want check-in reminders
+- Easily distracted and need periodic nudges
+- Starting with task tracking and establishing routines
+
+Disable reminders when:
+- You find notifications distracting or overwhelming
+- Already have a strong habit of checking tasks
+- Working in environments where notifications are disruptive
+- Prefer a quieter, self-directed approach
+
+For more details about how notifications work, see the [Notifications](/features/notifications) page.
+
+## RAM Saver
+
+Optimize memory usage to reduce the application's impact on system resources.
+
+### What It Does
+
+When **enabled**:
+- Minimal Tray Tasker uses various techniques to minimize RAM consumption
+- The application has a smaller memory footprint
+- Better performance on systems with limited memory
+- More resources available for other applications
+
+When **disabled**:
+- Standard memory usage patterns
+- Potentially faster UI responsiveness in some scenarios
+- No memory optimization applied
+
+### Default Setting
+
+**Not enabled by default** - The application is already lightweight, so most users don't need additional optimization.
+
+<Info>
+Minimal Tray Tasker is built with Tauri, which already creates very lightweight applications compared to traditional frameworks. RAM saver provides additional optimization for users who need it.
+</Info>
+
+### When to Enable
+
+<CardGroup cols={2}>
+  <Card title="Limited RAM" icon="microchip">
+    If your computer has 4GB RAM or less, enabling RAM saver can help.
+  </Card>
+
+  <Card title="Many Apps Running" icon="window-restore">
+    When you typically run many applications simultaneously and need to conserve memory.
+  </Card>
+
+  <Card title="Older Hardware" icon="computer">
+    On older computers where every megabyte of RAM counts.
+  </Card>
+
+  <Card title="Performance Issues" icon="triangle-exclamation">
+    If you notice system slowdowns and want to reduce app memory usage.
+  </Card>
+</CardGroup>
+
+### When to Disable
+
+<CardGroup cols={2}>
+  <Card title="Modern Hardware" icon="rocket">
+    Systems with 8GB+ RAM typically don't need RAM saving optimizations.
+  </Card>
+
+  <Card title="Maximum Responsiveness" icon="gauge-high">
+    If you want the absolute fastest UI response time.
+  </Card>
+
+  <Card title="Troubleshooting" icon="wrench">
+    If you experience any issues, disabling RAM saver can help isolate the problem.
+  </Card>
+
+  <Card title="Default Experience" icon="star">
+    When you want the standard, tested application behavior.
+  </Card>
+</CardGroup>
+
+<Tip>
+Try enabling RAM saver if you notice high memory usage. You can always disable it if you don't notice a benefit or experience any issues.
+</Tip>
+
+## Accessing Settings
+
+To configure your settings:
+
+<Steps>
+  <Step title="Open Minimal Tray Tasker">
+    Click the Minimal Tray Tasker icon in your system tray to open the application window.
+  </Step>
+
+  <Step title="Navigate to Settings">
+    Look for a Settings button, gear icon, or preferences menu in the application interface.
+  </Step>
+
+  <Step title="Toggle settings">
+    Each setting has a toggle switch. Click to enable (on) or disable (off).
+  </Step>
+
+  <Step title="Changes apply immediately">
+    Settings take effect as soon as you toggle them. No need to save or restart.
+  </Step>
+</Steps>
+
+## Settings Persistence
+
+All settings are saved automatically:
+- Changes persist between application restarts
+- Settings are stored in local configuration files
+- Your preferences are preserved even after updates
+- No cloud sync - settings are specific to each computer
+
+<Warning>
+If you reinstall the application or clear application data, settings will return to their defaults. Make note of your preferred configuration.
+</Warning>
+
+## Recommended Configurations
+
+Depending on your use case, here are some recommended setting combinations:
+
+### For New Users
+
+| Setting | Recommended | Why |
+|---------|------------|-----|
+| Autostart | Enabled | Ensures app is always available |
+| Reminders | Enabled | Helps build the check-in habit |
+| RAM Saver | Disabled | Test standard performance first |
+
+### For Experienced Users
+
+| Setting | Recommended | Why |
+|---------|------------|-----|
+| Autostart | Enabled | Convenience and daily task resets |
+| Reminders | Disabled | Already have established habits |
+| RAM Saver | As needed | Based on system resources |
+
+### For Resource-Constrained Systems
+
+| Setting | Recommended | Why |
+|---------|------------|-----|
+| Autostart | User preference | Depends on usage patterns |
+| Reminders | Disabled | Reduces background activity |
+| RAM Saver | Enabled | Minimizes memory footprint |
+
+### For Power Users
+
+| Setting | Recommended | Why |
+|---------|------------|-----|
+| Autostart | Enabled | Maximum automation |
+| Reminders | User preference | Based on workflow |
+| RAM Saver | Disabled | Maximum performance |
+
+<Tip>
+Start with the defaults and adjust based on your experience. Every user's needs are different!
+</Tip>
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="Do I need to restart the app after changing settings?">
+    No, all settings take effect immediately without requiring a restart. The application dynamically responds to setting changes.
+  </Accordion>
+
+  <Accordion title="Where are settings stored?">
+    Settings are stored locally on your computer in configuration files managed by the application. The exact location depends on your operating system but is in standard application data directories.
+  </Accordion>
+
+  <Accordion title="Can I export or backup my settings?">
+    Currently, there is no built-in export feature. Settings are simple toggles that are easy to reconfigure if needed.
+  </Accordion>
+
+  <Accordion title="Will updates reset my settings?">
+    No, updating to a new version of Minimal Tray Tasker preserves your existing settings. Your configuration is maintained across updates.
+  </Accordion>
+
+  <Accordion title="Can I have different settings on different computers?">
+    Yes, settings are stored locally on each computer. You can configure each installation independently based on that machine's needs.
+  </Accordion>
+
+  <Accordion title="What if autostart doesn't work on my system?">
+    Autostart functionality depends on operating system permissions. Check that Minimal Tray Tasker has the necessary permissions to register as a startup application. Some Linux distributions may require additional configuration.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+### Autostart Not Working
+
+1. Verify the setting is enabled in Minimal Tray Tasker
+2. Check your operating system's startup application list
+3. Ensure you have the necessary permissions
+4. Try disabling and re-enabling the setting
+5. Check for antivirus or security software blocking autostart
+
+### Reminders Not Appearing
+
+1. Confirm reminders are enabled in settings
+2. Check operating system notification permissions
+3. Verify the app is running (check system tray)
+4. See the [Notifications](/features/notifications) page for detailed troubleshooting
+
+### RAM Saver Impact Unclear
+
+1. Use your operating system's task manager to monitor memory usage
+2. Compare usage with RAM saver enabled vs disabled
+3. On systems with abundant RAM, the difference may be minimal
+4. The benefit is most noticeable on resource-constrained systems
+
+<Note>
+If you experience any issues with settings, try resetting to defaults by disabling all settings, restarting the app, then re-enabling your preferred configuration.
+</Note>

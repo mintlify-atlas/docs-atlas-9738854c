@@ -1,80 +1,168 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick Start
+description: Get started with Minimal Tray Tasker - create your first task and learn the basics
 ---
 
-## Get started in three steps
+# Quick Start Guide
 
-Get your documentation site running locally and make your first customization.
+This guide will walk you through the essential features of Minimal Tray Tasker and help you create your first task.
 
-### Step 1: Set up your local environment
+## Opening the App
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
+<Steps>
+  <Step title="Find the tray icon">
+    After installation, look for the Minimal Tray Tasker icon in your system tray (Windows/Linux) or menu bar (macOS).
+  </Step>
+  
+  <Step title="Click to open">
+    Click the tray icon to open the main task window. The window displays all your active tasks and controls.
+  </Step>
+</Steps>
+
+## Understanding the Interface
+
+The main window is divided into three sections:
+
+- **Top toolbar**: Quick access to add tasks, open settings, and toggle dark/light mode
+- **Navigation tabs**: Switch between To Do, Finished Daily Tasks, and Finished Tasks views
+- **Task list**: Your active and completed tasks appear here
+
+## Creating Your First Task
+
+<Steps>
+  <Step title="Open the Add Tracker dialog">
+    Click the **Add Tracker** button at the top of the window. This opens a dialog where you can configure your new task.
+  </Step>
+  
+  <Step title="Enter task details">
+    Fill in the task information:
     
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
+    - **Tracker Name**: Enter a descriptive name (e.g., "Drink water")
+    - **Amount**: Set how many times you need to complete this task (e.g., 8 for 8 glasses of water)
+    - **Make Tracker repeat daily**: Toggle this ON for habits that reset daily, or OFF for one-time tasks
     
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+    Example:
+    ```
+    Tracker Name: Drink water
+    Amount: 8
+    Daily: ON
+    ```
+  </Step>
+  
+  <Step title="Save the task">
+    Click **Add Tracker** to create your task. It will appear in your To Do list immediately.
+  </Step>
+  
+  <Step title="Track progress">
+    Click on your task to increment its progress. When you reach the target amount, the task is marked complete!
+  </Step>
+</Steps>
 
-### Step 2: Deploy your changes
+## Task Types Explained
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+Minimal Tray Tasker supports two types of tasks:
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+### Daily Tasks
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+- **Purpose**: Habits and routines you want to complete every day
+- **Behavior**: Automatically reset at midnight
+- **Examples**: "Drink 8 glasses of water", "Take breaks (5x)", "Exercise"
+- **Location**: Active tasks appear in To Do, completed ones move to Finished Daily Tasks
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  Daily tasks reset at midnight based on your system time. If you complete a daily task, it will reappear the next day with progress reset to 0.
+</Note>
+
+### One-Time Tasks
+
+- **Purpose**: Tasks that need to be done once and stay completed
+- **Behavior**: Stay completed until manually deleted
+- **Examples**: "Submit report", "Call dentist", "Fix bug #123"
+- **Location**: Active tasks appear in To Do, completed ones move to Finished Tasks
+
+## Navigating Views
+
+Use the navigation buttons to switch between different task views:
+
+<Tabs>
+  <Tab title="To Do">
+    Shows all active tasks that need completion. This is your main working view where you'll track progress throughout the day.
+  </Tab>
+  
+  <Tab title="Finished Daily Tasks">
+    Displays daily tasks you've completed today. These will reset at midnight and return to the To Do view.
+  </Tab>
+  
+  <Tab title="Finished Tasks">
+    Shows one-time tasks you've completed. These remain here until you manually delete them.
+  </Tab>
+</Tabs>
+
+## Configuring Settings
+
+<Steps>
+  <Step title="Open Settings">
+    Click the **Settings** button (gear icon) in the top toolbar.
+  </Step>
+  
+  <Step title="Adjust preferences">
+    Configure these options based on your needs:
+    
+    - **Autostart**: Launch Minimal Tray Tasker when your computer starts (enabled by default)
+    - **Enable Reminder**: Get notifications every hour to remind you of pending tasks (enabled by default)
+    - **Enable Ram Saver**: Reduce memory usage when the app is minimized to the tray
+  </Step>
+  
+  <Step title="Toggle theme">
+    Click the **Moon** icon in the toolbar to switch between light and dark mode. Your preference is saved automatically.
+  </Step>
+</Steps>
+
+## Managing Tasks
+
+### Deleting Tasks
+
+1. Find the task you want to remove
+2. Click the delete/trash icon next to it
+3. Confirm the deletion in the dialog
+
+<Warning>
+  Deleting a task is permanent and cannot be undone. The task and all its progress will be removed from the database.
+</Warning>
+
+### Editing Task Progress
+
+To manually adjust a task's progress, simply click on it multiple times to increment the counter. The progress is saved automatically to the local SQLite database.
+
+## Tips for Success
+
+<CardGroup cols={2}>
+  <Card title="Start Small" icon="seedling">
+    Begin with 2-3 daily tasks to build the habit of checking the app regularly.
+  </Card>
+  
+  <Card title="Use Realistic Amounts" icon="target">
+    Set achievable amounts for daily tasks. You can always increase them later.
+  </Card>
+  
+  <Card title="Leverage Reminders" icon="bell">
+    Keep hourly reminders enabled when building new habits to stay on track.
+  </Card>
+  
+  <Card title="Review Daily" icon="calendar">
+    Check your Finished Daily Tasks at the end of each day to track your progress.
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+You're all set! Here are some ideas to get the most out of Minimal Tray Tasker:
+
+- Create daily tasks for health habits (hydration, breaks, exercise)
+- Track work tasks like "Review PRs" or "Reply to emails"
+- Use one-time tasks for errands and to-dos
+- Experiment with the Ram Saver setting if you're concerned about performance
+
+<Note>
+  Your tasks are stored locally in an SQLite database on your computer. They're private and never sent to any server.
 </Note>

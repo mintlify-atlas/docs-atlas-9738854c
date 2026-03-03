@@ -1,0 +1,192 @@
+---
+title: Building from Source
+description: Learn how to build Minimal Tray Tasker from source code, including prerequisites, installation, and development workflow
+---
+
+## Prerequisites
+
+Before you begin building Minimal Tray Tasker, ensure you have the following tools installed:
+
+### Required Software
+
+- **Node.js** (v18 or higher) - JavaScript runtime for the frontend
+- **npm** - Package manager (comes with Node.js)
+- **Rust** (v1.77.2 or higher) - Required for Tauri backend
+- **System Dependencies** - Platform-specific requirements for Tauri
+
+<Note>
+Refer to the [Tauri prerequisites guide](https://tauri.app/v2/guides/prerequisites) for detailed system-specific dependencies.
+</Note>
+
+## Installation
+
+<Steps>
+  <Step title="Clone the Repository">
+    Clone the Minimal Tray Tasker repository to your local machine:
+    
+    ```bash
+    git clone https://github.com/yourusername/minimal-tray-tasker.git
+    cd minimal-tray-tasker
+    ```
+  </Step>
+
+  <Step title="Install Node Dependencies">
+    Install all required Node.js packages using npm:
+    
+    ```bash
+    npm i
+    ```
+    
+    This will install all dependencies listed in `package.json`, including:
+    - Svelte 5 and SvelteKit
+    - Tauri CLI and plugins
+    - Drizzle ORM for database management
+    - TailwindCSS for styling
+  </Step>
+
+  <Step title="Verify Installation">
+    Check that Rust and Node.js are properly installed:
+    
+    ```bash
+    node --version
+    npm --version
+    rustc --version
+    ```
+  </Step>
+</Steps>
+
+## Development
+
+### Running the Development Server
+
+To start the application in development mode with hot-reload:
+
+```bash
+npm run tauri dev
+```
+
+This command will:
+1. Start the Vite development server for the Svelte frontend
+2. Compile the Rust backend
+3. Launch the application window
+4. Enable hot-module replacement for rapid development
+
+<Tip>
+Development mode includes debug logging and allows you to use browser DevTools for debugging the frontend.
+</Tip>
+
+### Available Scripts
+
+<CodeGroup>
+```bash Development
+# Run the full Tauri app in dev mode
+npm run tauri dev
+
+# Run only the Vite dev server (frontend)
+npm run dev
+
+# Run with network access (for mobile testing)
+npm run host
+```
+
+```bash Type Checking
+# Run Svelte type checking
+npm run check
+
+# Run type checking in watch mode
+npm run check:watch
+```
+
+```bash Preview
+# Preview the production build
+npm run preview
+```
+</CodeGroup>
+
+## Building for Production
+
+### Creating a Production Build
+
+To build the application for distribution:
+
+```bash
+npm run tauri build
+```
+
+This command will:
+1. Build the optimized Svelte frontend using Vite
+2. Compile the Rust backend in release mode
+3. Create platform-specific installers and bundles
+
+### Build Artifacts
+
+After the build completes, you'll find the distributable files in:
+
+```
+src-tauri/target/release/
+├── bundle/           # Platform-specific installers
+│   ├── deb/         # Debian package (Linux)
+│   ├── appimage/    # AppImage (Linux)
+│   ├── dmg/         # DMG installer (macOS)
+│   └── msi/         # MSI installer (Windows)
+└── app              # Standalone executable
+```
+
+<Note>
+The actual bundle formats depend on your operating system. Each platform builds its native format by default.
+</Note>
+
+## Platform-Specific Builds
+
+### Linux
+
+```bash
+npm run tauri build
+```
+
+Generates:
+- `.deb` package for Debian/Ubuntu
+- `.AppImage` for universal Linux support
+
+### macOS
+
+```bash
+npm run tauri build
+```
+
+Generates:
+- `.dmg` installer
+- `.app` bundle
+
+<Tip>
+For macOS distribution, you may need to sign and notarize the application. See [Tauri's macOS signing guide](https://tauri.app/v2/guides/distribution/sign-macos).
+</Tip>
+
+### Windows
+
+```bash
+npm run tauri build
+```
+
+Generates:
+- `.msi` installer
+- `.exe` standalone executable
+
+## Troubleshooting
+
+### Common Build Issues
+
+**Rust compilation errors:**
+- Ensure you have the latest Rust version: `rustup update`
+- Check that all system dependencies are installed
+
+**Node dependency issues:**
+- Clear the cache: `npm cache clean --force`
+- Delete `node_modules` and reinstall: `rm -rf node_modules && npm i`
+
+**Tauri plugin errors:**
+- Verify that your Tauri version matches the plugin versions in `package.json` and `Cargo.toml`
+
+<Tip>
+For platform-specific issues, consult the [Tauri troubleshooting guide](https://tauri.app/v2/guides/debug/troubleshooting).
+</Tip>

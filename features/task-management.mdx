@@ -1,0 +1,134 @@
+---
+title: Task Management
+description: Learn how to add, track, complete, and manage your tasks in Minimal Tray Tasker
+---
+
+Minimal Tray Tasker makes it easy to track your everyday tasks directly from your system tray. This guide covers all the essential task management features.
+
+## Adding Tasks
+
+You can create two types of tasks in Minimal Tray Tasker:
+
+### One-Time Tasks
+
+One-time tasks are perfect for individual to-dos that you only need to complete once. Once marked as complete, they stay completed until you manually reopen or delete them.
+
+**To create a one-time task:**
+1. Open the Minimal Tray Tasker window from your system tray
+2. Enter your task name in the input field
+3. Set the amount (how many times you need to do this task to complete it)
+4. Leave the "daily" option unchecked
+5. Click Add or press Enter
+
+### Daily Tasks
+
+Daily tasks automatically reset at midnight, making them ideal for habits and recurring daily activities. See the [Daily Tasks](/features/daily-tasks) page for more details.
+
+<Tip>
+Set the amount to a number greater than 1 if you need to track tasks that require multiple completions, like "Drink 8 glasses of water" (amount: 8).
+</Tip>
+
+## Tracking Progress
+
+Minimal Tray Tasker allows you to track incremental progress on your tasks.
+
+### Incrementing Progress
+
+Click the increment button (or the task itself) to add progress toward completing a task. Your progress will increase by 1 each time until you reach the target amount.
+
+**What happens when you increment:**
+- Progress increases by 1 (e.g., from 2/5 to 3/5)
+- When progress reaches the target amount, the task is automatically marked as complete
+- Progress cannot exceed the target amount
+
+### Decrementing Progress
+
+Made a mistake? You can decrease your progress by clicking the decrement button.
+
+**What happens when you decrement:**
+- Progress decreases by 1 (e.g., from 3/5 to 2/5)
+- Progress cannot go below 0
+- Useful for correcting accidental clicks
+
+<Info>
+Your progress is saved automatically and persists even when you close the application.
+</Info>
+
+## Completing Tasks
+
+Tasks are automatically marked as complete when your progress reaches the target amount. For example, if a task requires 5 completions, it will be marked complete when you reach 5/5.
+
+**When a task is completed:**
+- It's visually distinguished from active tasks (usually with a checkmark or different styling)
+- For one-time tasks, it remains completed until you reopen or delete it
+- For daily tasks, it automatically resets to 0/amount at midnight
+
+## Reopening Tasks
+
+If you need to redo a completed task, you can reopen it.
+
+**To reopen a task:**
+1. Find the completed task in your task list
+2. Click the reopen or reset button
+3. The task progress resets to 0 and it becomes active again
+
+<Note>
+Reopening a task sets its progress back to 0, not to the last incomplete state. If you only want to adjust progress slightly, use the decrement button instead.
+</Note>
+
+## Deleting Tasks
+
+When you no longer need a task, you can permanently remove it from your list.
+
+**To delete a task:**
+1. Locate the task you want to remove
+2. Click the delete or remove button (usually a trash icon or X)
+3. The task is immediately removed from your list
+
+<Warning>
+Deleting a task is permanent and cannot be undone. All progress data for that task will be lost.
+</Warning>
+
+## Common Workflows
+
+<AccordionGroup>
+  <Accordion title="How do I create a simple checklist?">
+    Create one-time tasks with an amount of 1 for each item on your checklist. Each task will be complete after a single click.
+  </Accordion>
+
+  <Accordion title="How do I track habits that need multiple daily completions?">
+    Create a daily task with the amount set to the number of times you need to complete it. For example, "Take vitamins 3 times" would be a daily task with amount: 3.
+  </Accordion>
+
+  <Accordion title="What if I accidentally increment a task?">
+    Use the decrement button to reduce the progress by 1. If the task was already completed and you decrement it, it will become active again.
+  </Accordion>
+
+  <Accordion title="Can I edit a task name or amount after creating it?">
+    Currently, you cannot edit existing tasks. If you need to change a task, delete it and create a new one with the correct details.
+  </Accordion>
+
+  <Accordion title="Where is my task data stored?">
+    All task data is stored locally on your computer in a database file. Your tasks and progress persist between application restarts.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Clear Names" icon="font">
+    Give your tasks descriptive names so you can quickly identify them at a glance from the system tray.
+  </Card>
+
+  <Card title="Set Realistic Amounts" icon="bullseye">
+    For multi-step tasks, set amounts that are achievable and meaningful. Breaking large tasks into smaller ones often works better.
+  </Card>
+
+  <Card title="Daily vs One-Time" icon="calendar">
+    Use daily tasks for habits and routines, one-time tasks for specific to-dos. This keeps your task list organized and relevant.
+  </Card>
+
+  <Card title="Regular Cleanup" icon="broom">
+    Delete completed one-time tasks regularly to keep your list focused on active items.
+  </Card>
+</CardGroup>

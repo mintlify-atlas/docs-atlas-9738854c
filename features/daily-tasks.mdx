@@ -1,0 +1,211 @@
+---
+title: Daily Tasks
+description: Understand how daily tasks work and automatically reset at midnight for habit tracking
+---
+
+Daily tasks are a special type of task in Minimal Tray Tasker that automatically reset at midnight, making them perfect for tracking habits, routines, and recurring daily activities.
+
+## What Are Daily Tasks?
+
+Daily tasks are tasks that reset their progress to zero at midnight every day, allowing you to track activities that you want to complete on a daily basis.
+
+### Key Characteristics
+
+- **Automatic Reset**: Progress resets to 0 at exactly midnight (00:00) local time
+- **Persistent**: The task itself remains in your list indefinitely
+- **Completion Status**: Being marked as "completed" only lasts until midnight
+- **No Manual Intervention**: You don't need to do anything; the reset happens automatically
+
+<Info>
+Daily tasks reset based on the last modified time. If a daily task was last modified before today at midnight, it will be reset when you open the application.
+</Info>
+
+## Daily vs One-Time Tasks
+
+Understanding the difference helps you choose the right task type for your needs.
+
+| Feature | Daily Tasks | One-Time Tasks |
+|---------|-------------|----------------|
+| **Reset Behavior** | Automatic reset at midnight | Never reset automatically |
+| **Duration** | Recurring daily | Until manually completed/deleted |
+| **Best For** | Habits, routines, daily goals | Specific to-dos, project tasks |
+| **After Completion** | Resets next day | Stays completed |
+| **Use Case Examples** | Exercise, medications, reading | Finish report, buy groceries |
+
+## How the Midnight Reset Works
+
+Minimal Tray Tasker uses a background service to handle daily task resets.
+
+### Reset Mechanism
+
+1. **Automatic Check**: The application continuously monitors for the next midnight
+2. **Precise Timing**: Resets occur at exactly 00:00:00 (midnight) in your local timezone
+3. **Instant Update**: All daily tasks reset their progress to 0 and completion status to incomplete
+4. **Next Day Ready**: Your daily tasks are ready to track when your new day starts
+
+<Note>
+If your computer is turned off at midnight, the reset will occur when you next open Minimal Tray Tasker. The application checks if any daily tasks were last modified before today's midnight and resets them accordingly.
+</Note>
+
+### What Gets Reset
+
+When a daily task resets at midnight:
+- **Progress**: Returns to 0
+- **Completion Status**: Changes from complete to incomplete
+- **Task Name**: Remains unchanged
+- **Target Amount**: Remains unchanged
+- **Daily Flag**: Remains set to daily
+
+## Use Cases for Daily Tasks
+
+Daily tasks are incredibly versatile for tracking various aspects of your daily routine.
+
+### Health & Wellness
+
+<CardGroup cols={2}>
+  <Card title="Exercise" icon="dumbbell">
+    Track daily workouts or exercise sessions
+    
+    **Example**: "30-minute workout" (amount: 1)
+  </Card>
+
+  <Card title="Hydration" icon="glass-water">
+    Monitor water intake throughout the day
+    
+    **Example**: "Drink water" (amount: 8)
+  </Card>
+
+  <Card title="Medications" icon="pills">
+    Remember to take vitamins or medications
+    
+    **Example**: "Take vitamins" (amount: 2)
+  </Card>
+
+  <Card title="Meditation" icon="spa">
+    Track mindfulness or meditation sessions
+    
+    **Example**: "Meditate" (amount: 1)
+  </Card>
+</CardGroup>
+
+### Productivity & Habits
+
+<CardGroup cols={2}>
+  <Card title="Reading" icon="book">
+    Build a daily reading habit
+    
+    **Example**: "Read for 30 minutes" (amount: 1)
+  </Card>
+
+  <Card title="Study Sessions" icon="graduation-cap">
+    Track study blocks or learning time
+    
+    **Example**: "Study session" (amount: 3)
+  </Card>
+
+  <Card title="Writing" icon="pen">
+    Maintain a writing or journaling practice
+    
+    **Example**: "Journal entry" (amount: 1)
+  </Card>
+
+  <Card title="Code Practice" icon="code">
+    Track daily coding or practice exercises
+    
+    **Example**: "Coding challenge" (amount: 1)
+  </Card>
+</CardGroup>
+
+### Work & Responsibilities
+
+- **Check emails** (amount: 3) - Morning, midday, and afternoon email checks
+- **Team standups** (amount: 1) - Daily team meetings
+- **Client follow-ups** (amount: 5) - Number of clients to contact
+- **Social media posts** (amount: 2) - Content publishing goals
+
+<Tip>
+Set the amount to match your daily goal. For activities you do multiple times per day, use a higher amount to track each occurrence.
+</Tip>
+
+## Creating Daily Tasks
+
+To create a daily task:
+
+1. Open Minimal Tray Tasker from your system tray
+2. Enter a descriptive task name
+3. Set the amount (how many times per day you want to complete this)
+4. **Enable the "daily" checkbox** - this is the key difference
+5. Add the task
+
+<Warning>
+Make sure to check the "daily" option when creating the task. You cannot convert a one-time task to a daily task later; you would need to delete and recreate it.
+</Warning>
+
+## Managing Daily Tasks
+
+### Tracking Throughout the Day
+
+- **Increment**: Click to add progress as you complete each occurrence
+- **Decrement**: Remove progress if you made a mistake
+- **Complete**: The task automatically marks as complete when you reach the target amount
+
+### At Midnight
+
+No action required! The task will automatically:
+- Reset to 0 progress
+- Show as incomplete again
+- Be ready for the next day's tracking
+
+### Long-Term Management
+
+- **Keep Active**: Leave daily tasks in your list indefinitely for ongoing habits
+- **Delete When Done**: Remove daily tasks for habits you no longer want to track
+- **Reopen Manually**: If needed during the day, you can manually reopen a completed daily task to continue tracking
+
+## Common Questions
+
+<AccordionGroup>
+  <Accordion title="What happens if I don't complete a daily task?">
+    Nothing happens except the task resets at midnight. Daily tasks don't track streaks or failure - they simply reset each day. This keeps the system simple and judgment-free.
+  </Accordion>
+
+  <Accordion title="Can I see my history or past completions?">
+    Currently, Minimal Tray Tasker does not store historical completion data. It focuses on today's progress, not past performance. Each day is a fresh start.
+  </Accordion>
+
+  <Accordion title="What if my computer is off at midnight?">
+    The reset will happen the next time you open the application. The app checks if daily tasks were last modified before today's midnight and resets them accordingly.
+  </Accordion>
+
+  <Accordion title="Can I change a one-time task to a daily task?">
+    No, you cannot change the task type after creation. You'll need to delete the task and create a new one with the daily option enabled.
+  </Accordion>
+
+  <Accordion title="Do daily tasks work across time zones?">
+    Yes, daily tasks reset based on your local system time. If you travel across time zones, the reset will occur at midnight in your current timezone.
+  </Accordion>
+
+  <Accordion title="What's the best amount to set for daily tasks?">
+    It depends on your goal. Use 1 for binary habits (did it or didn't), or higher numbers for activities you do multiple times (8 glasses of water, 5 client calls, etc.).
+  </Accordion>
+</AccordionGroup>
+
+## Tips for Success
+
+<CardGroup cols={2}>
+  <Card title="Start Small" icon="seedling">
+    Begin with just a few daily tasks. Adding too many at once can be overwhelming.
+  </Card>
+
+  <Card title="Be Realistic" icon="chart-line">
+    Set amounts that are challenging but achievable. You can always adjust by creating a new task.
+  </Card>
+
+  <Card title="Check Regularly" icon="clock">
+    Use the hourly [reminders](/features/notifications) to stay aware of your daily tasks throughout the day.
+  </Card>
+
+  <Card title="Celebrate Progress" icon="trophy">
+    Completing daily tasks builds momentum. Enjoy the satisfaction of checking things off each day!
+  </Card>
+</CardGroup>

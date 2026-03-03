@@ -1,0 +1,93 @@
+{
+  "projectType": "saas",
+  "projectName": "Minimal Tray Tasker",
+  "projectDescription": "A minimal task tracker for the system tray built with Tauri and Svelte",
+  "theme": "almond",
+  "primaryColor": "#3b82f6",
+  "lightColor": "#60a5fa",
+  "darkColor": "#1e40af",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/task-management",
+              "features/daily-tasks",
+              "features/notifications",
+              "features/settings"
+            ]
+          },
+          {
+            "group": "Development",
+            "pages": [
+              "development/building",
+              "development/architecture",
+              "development/contributing"
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "support/troubleshooting",
+              "support/faq"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Frontend API",
+            "pages": [
+              "api/tracker-service",
+              "api/settings-service"
+            ]
+          },
+          {
+            "group": "Backend API",
+            "pages": [
+              "api/rust-commands",
+              "api/database-schema"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "System tray integration with minimal footprint",
+    "Task management with one-time and daily recurring tasks",
+    "Hourly reminder notifications to stay on track",
+    "Autostart on system boot",
+    "SQLite database with automatic migrations",
+    "Cross-platform support (Windows, macOS, Linux)",
+    "RAM saver mode to reduce memory usage"
+  ],
+  "publicApiSurface": [
+    "TrackerService.add(name, amount?, daily?)",
+    "TrackerService.increment(tracker)",
+    "TrackerService.decrement(tracker)",
+    "TrackerService.remove(id)",
+    "TrackerService.reopen(tracker)",
+    "TrackerService.refreshDailies()",
+    "SettingsService.setAutostart(value)",
+    "SettingsService.setReminders(value)",
+    "SettingsService.setRamSaver(value)",
+    "get_settings() -> SettingsObject",
+    "set_autostart(value: bool)",
+    "set_reminders(value: bool)",
+    "set_ram_saver(value: bool)"
+  ]
+}
